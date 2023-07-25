@@ -4,17 +4,8 @@ require_once 'PHPExcel/PHPExcel/IOFactory.php';
 require_once("config.php");
 require_once("functions.php");
 
-$servername = "localhost";
-$username = "root";
-$password = "";
-$db = "spsonlin_pro";
-// Create connection
-$conn = mysqli_connect($servername, $username, $password, $db);
-// Check connection
-if (!$conn) {
-   die("Connection failed: " . mysqli_connect_error());
-}
-echo "Connected successfully"."<br/>";
+global $db;
+
 // SQL statement to create table
 $sql = "CREATE TABLE excel_pick_import (
     id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -26,13 +17,13 @@ $sql = "CREATE TABLE excel_pick_import (
 )";
 
 //checking if excel_pick_import table exists in database
-if ($result = mysqli_query($conn, "SHOW TABLE STATUS FROM spsonlin_pro LIKE 'excel_pick_import'")){
+if ($result = $db->query("SHOW TABLE STATUS FROM spsonlin_pro LIKE 'excel_pick_import'")) {
     $result = (array)$result;
-    if($result["lengths"] !== NULL) {
-        echo "Table excel_pick_import already exists"."<br/>";
+    if ($result["lengths"] !== NULL) {
+        echo "Table excel_pick_import already exists" . "<br/>";
     } else {
-        mysqli_query($conn, $sql);
-        echo "Table excel_pick_import created successfully"."<br/>";
+        $db->query($sql);
+        echo "Table excel_pick_import created successfully" . "<br/>";
     }
 }
 
@@ -60,12 +51,12 @@ if (0 < $_FILES['file']['error']) {
             $highestColumn      = $sheet->getHighestColumn();
             $highestColumnIndex = PHPExcel_Cell::columnIndexFromString($highestColumn);
             $records = array();
-            
+
             $sql = "DELETE FROM excel_pick_import";
-            if ($conn->query($sql) === TRUE) {
+            if ($db->query($sql) === TRUE) {
                 echo "All data deleted successfully";
             } else {
-                echo "Error deleting data: " . $conn->error;
+                echo "Error deleting data: " . $db->error;
             }
 
             // for ($row = 1; $row <= $total_rows; ++$row) {
@@ -79,27 +70,24 @@ if (0 < $_FILES['file']['error']) {
 
             foreach ($records as $index => $row) {
                 if ($index > 0) {
-                    $Container = $row[5];   
-                    var_dump($Container);                    
-                    $Module = $row[6];             
+                    $Container = $row[5];
+                    var_dump($Container);
+                    $Module = $row[6];
                     $Qty_Boxes = $row[8];
                     $Stocking_Date = $row[11];
                     $shift = $row[12];
-                    $query = "INSERT INTO excel_pick_import(Container, Module, Qty_Boxes, Stocking_Date, shift) VALUES ('" . $Container . "','" . $Module . "','" . $Qty_Boxes . "','" . $Stocking_Date . "','" . $shift . "')"; 
+                    $query = "INSERT INTO excel_pick_import(Container, Module, Qty_Boxes, Stocking_Date, shift) VALUES ('" . $Container . "','" . $Module . "','" . $Qty_Boxes . "','" . $Stocking_Date . "','" . $shift . "')";
 
                     echo $query;
-                    
-                    if ($conn->query($query) === FALSE) {
-                        echo "Error: " . $query . "<br>" . mysqli_error($conn);
+
+                    if ($db->query($query) === FALSE) {
+                        echo "Error: " . $query . "<br>";
                     }
                 }
             }
             echo 'Success';
-            mysqli_close($conn);
         } catch (Exception $e) {
             die('Error loading file "' . pathinfo($file, PATHINFO_BASENAME) . '": ' . $e->getMessage());
         }
     }
-      
 }
-?>

@@ -15,130 +15,130 @@ login_check();
     <title>Document</title>
 </head>
 <style>
-/*header*/
-.header {
-    width: 100%;
-    height: 30px;
-    padding: 20px 5px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: #eaecee;
-    color: #063c49;
-    font-weight: bold;
-}
+    /*header*/
+    .header {
+        width: 100%;
+        height: 30px;
+        padding: 20px 5px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: #eaecee;
+        color: #063c49;
+        font-weight: bold;
+    }
 
-.header .date {
-    width: 15%;
-}
+    .header .date {
+        width: 15%;
+    }
 
-.header .build_amount {
-    width: 35px
-}
+    .header .build_amount {
+        width: 35px
+    }
 
-.header_input::placeholder {
-    text-align: start;
-    text-indent: 5%;
-}
+    .header_input::placeholder {
+        text-align: start;
+        text-indent: 5%;
+    }
 
-input::placeholder {
-    color: #063c49;
-    font-weight: bold;
-    text-align: center;
-}
+    input::placeholder {
+        color: #063c49;
+        font-weight: bold;
+        text-align: center;
+    }
 
-/** container-component */
+    /** container-component */
 
-.container {
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-}
+    .container {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+    }
 
-/* day */
-.day {
-    color: #063c49;
-    font-weight: bold;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    padding: 10px;
-}
+    /* day */
+    .day {
+        color: #063c49;
+        font-weight: bold;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        padding: 10px;
+    }
 
-.dayshift {
-    font-size: 40px;
-    font-family: sans-serif;
-}
+    .dayshift {
+        font-size: 40px;
+        font-family: sans-serif;
+    }
 
-.box {
-    display: flex;
-    justify-content: space-around;
-    text-align: center;
-}
+    .box {
+        display: flex;
+        justify-content: space-around;
+        text-align: center;
+    }
 
-.box_1 {
-    margin-right: 20px;
-}
+    .box_1 {
+        margin-right: 20px;
+    }
 
-.square_box {
-    display: flex;
-    justify-content: space-between;
-}
+    .square_box {
+        display: flex;
+        justify-content: space-between;
+    }
 
-.square_box label {
-    font-size: 12px;
-}
+    .square_box label {
+        font-size: 12px;
+    }
 
-.col {
-    border: 1px solid gray;
-    width: 80px;
-    margin: 5px
-}
+    .col {
+        border: 1px solid gray;
+        width: 80px;
+        margin: 5px
+    }
 
-.col .time {
-    font-size: 25px;
-}
+    .col .time {
+        font-size: 25px;
+    }
 
-/* content */
-.content {
-    width: 100%
-}
+    /* content */
+    .content {
+        width: 100%
+    }
 
-table {
-    border-collapse: collapse;
-    text-align: center;
-}
+    table {
+        border-collapse: collapse;
+        text-align: center;
+    }
 
-tr,
-th,
-td {
-    border: 1px solid black;
-    padding: 10px 20px;
-}
+    tr,
+    th,
+    td {
+        border: 1px solid black;
+        padding: 10px 20px;
+    }
 
-.left_side {
-    display: block;
-    width: 47%;
-}
+    .left_side {
+        display: block;
+        width: 47%;
+    }
 </style>
 
 <body onload="showTime()">
     <div class="header">
         <script>
-        function showTime() {
-            var date = new Date();
-            var hours = date.getHours();
-            var minutes = date.getMinutes();
-            var seconds = date.getSeconds();
-            var ampm = hours >= 12 ? 'PM' : 'AM';
-            hours = hours % 12;
-            hours = hours ? hours : 12;
-            minutes = minutes < 10 ? '0' + minutes : minutes;
-            seconds = seconds < 10 ? '0' + seconds : seconds;
-            var time = hours + ':' + minutes + ':' + seconds + ' ' + ampm;
-            document.getElementById('present-time').innerHTML = time;
-            setTimeout(showTime, 1000);
-        }
+            function showTime() {
+                var date = new Date();
+                var hours = date.getHours();
+                var minutes = date.getMinutes();
+                var seconds = date.getSeconds();
+                var ampm = hours >= 12 ? 'PM' : 'AM';
+                hours = hours % 12;
+                hours = hours ? hours : 12;
+                minutes = minutes < 10 ? '0' + minutes : minutes;
+                seconds = seconds < 10 ? '0' + seconds : seconds;
+                var time = hours + ':' + minutes + ':' + seconds + ' ' + ampm;
+                document.getElementById('present-time').innerHTML = time;
+                setTimeout(showTime, 1000);
+            }
         </script>
         <span id="present-time"></span>
         <div>
@@ -153,39 +153,38 @@ td {
                 </div>
             </div>
         </div>
-        <button onclick="exportToExcel()"><img src="assets/img/report.png" alt="report" width="30px"
-                height="30px" /></button>
+        <button onclick="exportToExcel()"><img src="assets/img/report.png" alt="report" width="30px" height="30px" /></button>
         <script>
-        function exportToExcel() {
-            // Get the data element
-            var data = document.getElementById("ExcelData");
+            function exportToExcel() {
+                // Get the data element
+                var data = document.getElementById("ExcelData");
 
-            // Create an array of rows for the CSV file
-            var rows = [];
-            var dataRows = data.getElementsByTagName("tr");
-            for (var i = 0; i < dataRows.length; i++) {
-                var row = [];
-                var dataCells = dataRows[i].getElementsByTagName("td");
-                for (var j = 0; j < dataCells.length; j++) {
-                    row.push(dataCells[j].innerText);
+                // Create an array of rows for the CSV file
+                var rows = [];
+                var dataRows = data.getElementsByTagName("tr");
+                for (var i = 0; i < dataRows.length; i++) {
+                    var row = [];
+                    var dataCells = dataRows[i].getElementsByTagName("td");
+                    for (var j = 0; j < dataCells.length; j++) {
+                        row.push(dataCells[j].innerText);
+                    }
+                    rows.push(row);
                 }
-                rows.push(row);
-            }
 
-            // Combine the array of rows into a single CSV file
-            var csv = "";
-            for (var i = 0; i < rows.length; i++) {
-                csv += rows[i].join(",") + "\n";
-            }
+                // Combine the array of rows into a single CSV file
+                var csv = "";
+                for (var i = 0; i < rows.length; i++) {
+                    csv += rows[i].join(",") + "\n";
+                }
 
-            // Create a link to download the CSV file as an Excel file
-            var link = document.createElement("a");
-            link.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
-            link.download = "data.csv";
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
+                // Create a link to download the CSV file as an Excel file
+                var link = document.createElement("a");
+                link.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+                link.download = "data.csv";
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
         </script>
         <div>
             <label for="last_uploaded">Last Uploaded</label>
@@ -227,87 +226,37 @@ td {
                 </div>
             </div>
             <div class="content" id="table_data">
-                <?php
-                // Connect to the database
-                $servername = "localhost";
-                $username = "root";
-                $password = "";
-                $db = "spsonlin_pro";
-                // Create connection
-                $conn = mysqli_connect($servername, $username, $password,$db);
-                // Check connection
-                if (!$conn) {
-                die("Connection failed: " . mysqli_connect_error());
-                }
-                // Execute SQL query to fetch data from the table
-                $sql = "SELECT * FROM excel_pick_import";
-                $result = $conn->query($sql);
-                // Check if any rows were returned
-                if ($result->num_rows > 0) {
-                    // Display the data in an HTML table
-                    echo "<table id='myTable'>";
-                    echo "<tr><th>Cont.</th><th>Mod.</th><th>Boxes</th><th>Counter</th><th>LIVE BUILD</th><th>Load confirm</th><th>S/fill START</th><th>S/fill FINISH</th></tr>";
-                    $my_array = [];
-                    $i = 0;
-                    $result_array = [];
-
-                    while ($row = $result->fetch_assoc()) {
-                        array_push($result_array, $row);
-                    }
-
-                    $result_length = count($result_array);
-
-                    foreach ($result_array as $row) {
-                        if($row["id"] % 2 === 0) {
-                            $counter = intval($row["Qty_Boxes"]);
-                            if ($i + 1 < $result_length) {
-                                $counter += intval($result_array[$i + 1]["Qty_Boxes"]);
-                            }
-                            echo "<tr><td>" . $row["Container"] . "</td><td>" . $row["Module"] . "</td><td>" . $row["Qty_Boxes"] . "</td><td rowspan='2'>" . $counter . "</td><td rowspan='2'>" . $row["Qty_Boxes"] . "</td><td rowspan='2'>"."</td><td rowspan='2'>" . "</td><td rowspan='2'>" . "</td></tr>";
-                        }
-                        else echo "<tr><td>" . $row["Container"] . "</td><td>" . $row["Module"] . "</td><td>" . $row["Qty_Boxes"] . "</tr>";
-
-                        $i++;
-                    }
-                    echo "</table>";
-                } else {
-                    // Display a message if no rows were returned
-                    echo "No data found";
-                }
-                
-                mysqli_close($conn);
-                ?>
                 <script>
-                let previousObj = [];
-                const rows = $("table tr");
-                rows.each(function(i, el) {
-                    let obj = [];
-                    $(el).children("td").each(function(ic, elc) {
-                        obj.push(elc);
+                    let previousObj = [];
+                    const rows = $("table tr");
+                    rows.each(function(i, el) {
+                        let obj = [];
+                        $(el).children("td").each(function(ic, elc) {
+                            obj.push(elc);
 
-                        if (previousObj.length > ic) {
-                            if (previousObj[ic].innerHTML == obj[ic].innerHTML) {
-                                $(previousObj[ic]).attr('rowspan', getRowsSpan(ic, i, obj[ic]
-                                    .innerHTML));
-                                $(obj[ic]).remove();
+                            if (previousObj.length > ic) {
+                                if (previousObj[ic].innerHTML == obj[ic].innerHTML) {
+                                    $(previousObj[ic]).attr('rowspan', getRowsSpan(ic, i, obj[ic]
+                                        .innerHTML));
+                                    $(obj[ic]).remove();
+                                }
                             }
-                        }
+                        });
+
+                        previousObj = obj;
                     });
 
-                    previousObj = obj;
-                });
+                    function getRowsSpan(col, row, value) {
+                        var rowSpan = 2;
+                        var actualRow = row + 1;
 
-                function getRowsSpan(col, row, value) {
-                    var rowSpan = 2;
-                    var actualRow = row + 1;
+                        while ($(rows[actualRow]).children("td")[col].innerHTML == value) {
+                            rowSpan++;
+                            actualRow++;
+                        }
 
-                    while ($(rows[actualRow]).children("td")[col].innerHTML == value) {
-                        rowSpan++;
-                        actualRow++;
+                        return rowSpan;
                     }
-
-                    return rowSpan;
-                }
                 </script>
             </div>
         </div>
@@ -344,45 +293,24 @@ td {
                     </div>
                 </div>
             </div>
-            <div class="content" id="table_data">
-                <?php
-                // Connect to the database
-                $servername = "localhost";
-                $username = "root";
-                $password = "";
-                $db = "spsonlin_pro";
-                // Create connection
-                $conn = mysqli_connect($servername, $username, $password,$db);
-                // Check connection
-                if (!$conn) {
-                die("Connection failed: " . mysqli_connect_error());
-                }
-                
-                // Execute SQL query to fetch data from the table
-                $sql = "SELECT * FROM excel_pick_import";
-                $result = $conn->query($sql);
-                // Check if any rows were returned
-                if ($result->num_rows > 0) {
-                    // Display the data in an HTML table
-                    echo "<table id='myTable'>";
-                    echo "<tr><th>Cont.</th><th>Mod.</th><th>Boxes</th><th>Counter</th><th>LIVE BUILD</th><th>Load confirm</th><th>S/fill START</th><th>S/fill FINISH</th></tr>";
-                    while ($row = $result->fetch_assoc()) {
-                        if($row["id"]%2===0)echo "<tr><td>" . $row["Container"] . "</td><td>" . $row["Module"] . "</td><td>" . $row["Qty_Boxes"] . "</td><td rowspan='2'>" . $row["Qty_Boxes"] . "</td><td rowspan='2'>" . $row["Qty_Boxes"] . "</td><td rowspan='2'>"."</td><td rowspan='2'>" . "</td><td rowspan='2'>" . "</td></tr>";
-                        else echo "<tr><td>" . $row["Container"] . "</td><td>" . $row["Module"] . "</td><td>" . $row["Qty_Boxes"] . "</tr>";
-                    }
-                    echo "</table>";
-                } else {
-                    // Display a message if no rows were returned
-                    echo "No data found";
-                }
-                
-                mysqli_close($conn);
-                ?>
-
-            </div>
+            <div class="content" id="table_data"></div>
         </div>
     </div>
 
 </body>
+
+<script>
+    function getShifts() {
+        $.ajax({
+            url: "actions.php",
+            method: "post",
+            data: {
+                action: 'get_shifts'
+            }
+        }).then((res) => {
+            $('#table_data').html(res);
+        })
+    }
+</script>
 
 </html>

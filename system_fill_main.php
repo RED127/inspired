@@ -341,31 +341,6 @@ require_once("assets.php");
                     </div>
                     <div class="content night_table" id="table_data">
                     </div>
-                    <?php
-                    // Connect to the database
-                    $servername = "localhost";
-                    $username = "root";
-                    $password = "";
-                    $db = "spsonlin_pro";
-                    // Create connection
-                    $conn = mysqli_connect($servername, $username, $password, $db);
-                    // Check connection
-                    if (!$conn) {
-                      die("Connection failed: " . mysqli_connect_error());
-                    }
-                    $sql1 = "SELECT * FROM users";
-                    $result1 = $conn->query($sql1);
-                    if ($result1->num_rows > 0) {
-                      while ($row = $result1->fetch_assoc()) {
-                        $userNames[] = $row['username'];
-                      }
-                      $jsonData = json_encode($userNames);
-                      echo "<script>var userNames = " . $jsonData . "</script>";
-                    } else {
-                      echo "No data found";
-                    }
-                    mysqli_close($conn);
-                    ?>
                   </div>
                 </div>
               </div>
@@ -732,6 +707,19 @@ require_once("assets.php");
   }
 
   // 2023-7-20
+  function getUsers() {
+    $.ajax({
+      url: "actions.php",
+      method: "post",
+      data: {
+        action: 'get_users'
+      }
+    }).done(function(result) {
+      console.log("users====>", result);
+      var userNames = result;
+    });
+  }
+
   function deleteFile(filename) {
     $.ajax({
       url: "actions.php",
@@ -788,7 +776,9 @@ require_once("assets.php");
     });
   }
 
+  // Initial function
   read_excel_data();
+  getUsers();
 </script>
 
 </html>

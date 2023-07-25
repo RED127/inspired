@@ -4452,6 +4452,45 @@ function delete_EveryData()
 }
 
 // 2023-7-20
+function get_shifts()
+{
+    global $db;
+    // Execute SQL query to fetch data from the table
+    $sql = "SELECT * FROM excel_pick_import";
+    $result = $db->query($sql);
+    // Check if any rows were returned
+    $replyData = '';
+    if ($result->num_rows > 0) {
+        // Display the data in an HTML table
+        $replyData . "<table id='myTable'>";
+        $replyData . "<tr><th>Cont.</th><th>Mod.</th><th>Boxes</th><th>Counter</th><th>LIVE BUILD</th><th>Load confirm</th><th>S/fill START</th><th>S/fill FINISH</th></tr>";
+        while ($row = $result->fetch_assoc()) {
+            if ($row["id"] % 2 === 0) $replyData . "<tr><td>" . $row["Container"] . "</td><td>" . $row["Module"] . "</td><td>" . $row["Qty_Boxes"] . "</td><td rowspan='2'>" . $row["Qty_Boxes"] . "</td><td rowspan='2'>" . $row["Qty_Boxes"] . "</td><td rowspan='2'>" . "</td><td rowspan='2'>" . "</td><td rowspan='2'>" . "</td></tr>";
+            else $replyData . "<tr><td>" . $row["Container"] . "</td><td>" . $row["Module"] . "</td><td>" . $row["Qty_Boxes"] . "</tr>";
+        }
+        $replyData . "</table>";
+    } else {
+        // Display a message if no rows were returned
+        $replyData . "No data found";
+    }
+    echo $replyData;
+}
+function get_users()
+{
+    global $db;
+    $sql1 = "SELECT * FROM users";
+    $result1 = $db->query($sql1);
+    if ($result1->num_rows > 0) {
+        while ($row = $result1->fetch_assoc()) {
+            $userNames[] = $row['username'];
+        }
+        $jsonData = json_encode($userNames);
+    } else {
+        echo "No data found";
+    }
+    echo $jsonData;
+}
+
 function delete_file($post_data)
 {
     $fileName = $post_data['file'];

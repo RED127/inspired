@@ -1,15 +1,14 @@
 <?php
 require_once 'PHPExcel/PHPExcel.php';
 require_once 'PHPExcel/PHPExcel/IOFactory.php';
-require_once ("config.php");
-require_once ("functions.php");
-if ( 0 < $_FILES['file']['error'] ) {
+require_once("config.php");
+require_once("functions.php");
+if (0 < $_FILES['file']['error']) {
     echo 'Error: ' . $_FILES['file']['error'] . '<br>';
-}
-else {
+} else {
     $file = 'container_devan_data' . $_FILES['file']['name'];
     $result = move_uploaded_file($_FILES['file']['tmp_name'], $file);
-    if($result) {
+    if ($result) {
         //Import Excel to DB
         $excel = new PHPExcel();
         try {
@@ -45,7 +44,7 @@ else {
                     'deeside_yard_inbound_renban_no_1',
                     'deeside_yard_container_number_no_1',
                     'approved_by',
-                    ),
+                ),
             );
             $col = PHPExcel_Cell::columnIndexFromString('CL') - 1;
             $approved_by = $sheet->getCellByColumnAndRow($col, 1)->getValue();
@@ -54,39 +53,38 @@ else {
             $val = $cell->getValue();
             $start_date = $stringDate = \PHPExcel_Style_NumberFormat::toFormattedString($val, 'YYYY-MM-DD');
             $index = 1;
-            $need_column_index = array(0,1,3,4,7,15,18,19,22,30,31,34,42,47,51,54,62,63,65,76);
+            $need_column_index = array(0, 1, 3, 4, 7, 15, 18, 19, 22, 30, 31, 34, 42, 47, 51, 54, 62, 63, 65, 76);
             for ($row = $start_row; $row <= $total_rows; $row++) {
                 $cell = $sheet->getCellByColumnAndRow(0, $row);
                 $date_val = $cell->getValue();
-                if($date_val != null) {
+                if ($date_val != null) {
                     $col_index = 0;
-                    for ($col = 0; $col < $highestColumnIndex; ++ $col) {
-                        if(in_array($col, $need_column_index)) {
+                    for ($col = 0; $col < $highestColumnIndex; ++$col) {
+                        if (in_array($col, $need_column_index)) {
                             $cell = $sheet->getCellByColumnAndRow($col, $row);
-                            if($col == 0) {
+                            if ($col == 0) {
                                 $value = $cell->getFormattedValue();
                                 $val = date('Y-m-d', strtotime($value));
-                            }
-                            else
+                            } else
                                 $val = $cell->getValue();
 
-                            if($col == 3 && round($val, 5) == 1462.85417 ) {
+                            if ($col == 3 && round($val, 5) == 1462.85417) {
                                 $val = '20.30';
                             }
 
                             $records[$index][$col_index] = $val;
-                            $col_index ++;
+                            $col_index++;
                         }
                     }
                     $records[$index][$col_index] = $approved_by;
 
                     //Check exist old data and update
                     $date = $records[$index][0];
-                    
+
                     $shift = $records[$index][1];
                     $chk_query = "SELECT id FROM {$tblContainerDevan} WHERE `date` = '{$date}' AND `shift` = '{$shift}'";
                     $chk_result = $db->query($chk_query);
-                    if(mysqli_num_rows($chk_result) > 0) {
+                    if (mysqli_num_rows($chk_result) > 0) {
                         $line = mysqli_fetch_object($chk_result);
                         $old_id = $line->id;
                         foreach ($records[$index] as $key => $rowValue) {
@@ -114,14 +112,14 @@ else {
                                             ";
                         $res = $db->query($update_query);
                     } else {
-                        $index ++;
+                        $index++;
                     }
                 }
             }
 
             //var_dump($records);exit();
-            if(count($records) > 2) {
-                $fields = "`".implode("`, `", array_shift($records))."`";
+            if (count($records) > 2) {
+                $fields = "`" . implode("`, `", array_shift($records)) . "`";
                 $values = array();
                 foreach ($records as $rowValues) {
                     foreach ($rowValues as $key => $rowValue) {
@@ -130,12 +128,12 @@ else {
                     $values[] = "('" . implode("', '", $rowValues) . "')";
                 }
 
-                $query = "INSERT INTO {$tblContainerDevan} ($fields) VALUES " . implode (', ', $values);
+                $query = "INSERT INTO {$tblContainerDevan} ($fields) VALUES " . implode(', ', $values);
                 $result = $db->query($query);
             }
             echo 'Success';
         } catch (Exception $e) {
-            die('Error loading file "' . pathinfo($file, PATHINFO_BASENAME). '": ' . $e->getMessage());
+            die('Error loading file "' . pathinfo($file, PATHINFO_BASENAME) . '": ' . $e->getMessage());
         }
     }
 }
