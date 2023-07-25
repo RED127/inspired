@@ -180,7 +180,7 @@ require_once("assets.php");
                   </script>
                   <!-- <span id="present-time"></span> -->
 
-                  <input class="form-control" type="text" id="date_picker" name="date_picker" value="<?php echo date('Y-m-d'); ?>" style="display: inline-block; width: 150px;">
+                  <input class="form-control" type="text" id="date_picker" name="date_picker" value="<?php echo date('d-m-Y'); ?>" style="display: inline-block; width: 150px;">
 
                   <div style="display:flex; align-items: center;">
                     <label for="BUILD AMOUNT" style="margin:unset;">BUILD AMOUNT:&nbsp;</label>
@@ -358,7 +358,7 @@ require_once("assets.php");
   // document.getElementById("date_picker").valueAsDate = new Date();
   $(document).ready(function() {
     $("#date_picker").datetimepicker({
-      format: 'YYYY-MM-DD',
+      format: 'DD-MM-YYYY',
       icons: {
         previous: 'fas fa-angle-left',
         next: 'fas fa-angle-right',
@@ -366,13 +366,13 @@ require_once("assets.php");
     });
     $("#build_amount").keydown(function(e) {
       if (e.keyCode === 13) {
-        let segVal_Day = ($("#build_amount").val() / dayRowNum * 2).toFixed(2);
-        let segVal_Night = ($("#build_amount").val() / nightRowNum * 2).toFixed(2);
+        let segVal_Day = ($("#build_amount").val() / (dayRowNum / 2)).toFixed(2);
+        let segVal_Night = ($("#build_amount").val() / (nightRowNum / 2)).toFixed(2);
         for (let i = 1; i <= dayRowNum; i++) {
-          $("#day_counter_" + i).text((segVal_Day * (parseInt(i / 2) + 1)).toFixed(2));
+          $("#day_counter_" + i).text((segVal_Day * i).toFixed(2));
         }
         for (let j = 1; j <= nightRowNum; j++) {
-          $("#night_counter_" + j).text((segVal_Night * (parseInt(j / 2) + 1)).toFixed(2));
+          $("#night_counter_" + j).text((segVal_Night * j).toFixed(2));
         }
       }
     })
@@ -396,8 +396,27 @@ require_once("assets.php");
             let tmpDayRowID = $(selRow).attr("dayrowid");
             let tmpTxt = "<span style='color:#063c49; font-weight:700;'><?php echo $_SESSION['user']['username'] ?></span>";
             let newTime = "<p style='margin:unset;'>" + new Date().getHours() + ":" + new Date().getMinutes() + "</p>";
+
+            // Save Data
+            var rowID1 = $("tr[dayrowid='" + i + "']").attr("id");
+            var rowID2 = $('#' + rowID1).next().next().next().attr("id");
+            var curretUser = '<?php echo $_SESSION['user']['username'] ?>';
+            var liveTime = new Date().getHours() + ":" + new Date().getMinutes();
+            var liveBuild = liveVal;
+            var startInfo = {}
+            var finishInfo = {}
+            // Save Data End
+
             if (tmpDayRowID % 2 === 0) {
               let sibling = parseInt(tmpDayRowID) + 1;
+              startInfo = {
+                userName: $($("tr[dayrowid='" + sibling + "'] td:nth-child(6)")).children("div[name='dayStUser']").text(),
+                regTime: $($("tr[dayrowid='" + sibling + "'] td:nth-child(6)")).children("div[name='dayStTime']").text()
+              }
+              finishInfo = {
+                userName: $($("tr[dayrowid='" + sibling + "'] td:nth-child(7)")).children("div[name='dayFnUser']").text(),
+                regTime: $($("tr[dayrowid='" + sibling + "'] td:nth-child(7)")).children("div[name='dayFnTime']").text()
+              }
               if ($("tr[dayrowid='" + sibling + "']").attr("greenFlag") == "1") {
                 $($(selRow).children()[5]).append(tmpTxt, newTime);
                 $($(selRow).children()[4]).text(liveVal);
@@ -410,17 +429,25 @@ require_once("assets.php");
                 var startSelectElement = document.getElementById("dayStSel_" + parseInt(i / 2 + 1));
                 var finishSelectElement = document.getElementById("dayFnSel_" + parseInt(i / 2 + 1));
 
-                userNames.forEach(function(name) {
+                userNames.map(name => {
                   var option = document.createElement("option");
                   option.text = name;
                   startSelectElement.add(option);
 
                   var optionClone = option.cloneNode(true);
                   finishSelectElement.add(optionClone);
-                });
+                })
               }
             } else {
               let sibling = parseInt(tmpDayRowID) - 1;
+              startInfo = {
+                userName: $($("tr[dayrowid='" + sibling + "'] td:nth-child(6)")).children("div[name='dayStUser']").text(),
+                regTime: $($("tr[dayrowid='" + sibling + "'] td:nth-child(6)")).children("div[name='dayStTime']").text()
+              }
+              finishInfo = {
+                userName: $($("tr[dayrowid='" + sibling + "'] td:nth-child(7)")).children("div[name='dayFnUser']").text(),
+                regTime: $($("tr[dayrowid='" + sibling + "'] td:nth-child(7)")).children("div[name='dayFnTime']").text()
+              }
               if ($("tr[dayrowid='" + sibling + "']").attr("greenFlag") == "1") {
                 $($($("tr[dayrowid='" + sibling + "']")).children()[5]).append(tmpTxt, newTime);
                 $($($("tr[dayrowid='" + sibling + "']")).children()[4]).text(liveVal);
@@ -433,7 +460,7 @@ require_once("assets.php");
                 var startSelectElement = document.getElementById("dayStSel_" + parseInt(i / 2 + 1));
                 var finishSelectElement = document.getElementById("dayFnSel_" + parseInt(i / 2 + 1));
 
-                userNames.forEach(function(name) {
+                userNames.map(name => {
                   var option = document.createElement("option");
                   option.text = name;
                   startSelectElement.add(option);
@@ -443,7 +470,19 @@ require_once("assets.php");
                 });
               }
             }
+            let data = {
+              firstID: rowID1,
+              secondID: rowID2,
+              currentUser: curretUser,
+              liveTime: liveTime,
+              liveBuild: liveBuild,
+              startInfo: startInfo,
+              finishInfo: finishInfo
+            };
+            finalData(data);
+
             $("#cont_mod").val("");
+
           }
         }
 
@@ -460,8 +499,27 @@ require_once("assets.php");
             let tmpDayRowID = $(selRow).attr("nightrowid");
             let tmpTxt = "<span style='color:#063c49; font-weight:700;'><?php echo $_SESSION['user']['username'] ?></span><br/>";
             let newTime = "<p style='margin:unset;'>" + new Date().getHours() + ":" + new Date().getMinutes() + "</p>";
+
+            // Save Data
+            var rowID1 = $("tr[nightrowid='" + i + "']").attr("id");
+            var rowID2 = $('#' + rowID1).next().next().next().attr("id");
+            var curretUser = '<?php echo $_SESSION['user']['username'] ?>';
+            var liveTime = new Date().getHours() + ":" + new Date().getMinutes();
+            var liveBuild = liveVal;
+            var startInfo = {}
+            var finishInfo = {}
+            // Save Data End
+
             if (tmpDayRowID % 2 === 0) {
               let sibling = parseInt(tmpDayRowID) + 1;
+              startInfo = {
+                userName: $($("tr[nightrowid='" + sibling + "'] td:nth-child(6)")).children("div[name='nightStUser']").text(),
+                regTime: $($("tr[nightrowid='" + sibling + "'] td:nth-child(6)")).children("div[name='nightStTime']").text()
+              }
+              finishInfo = {
+                userName: $($("tr[nightrowid='" + sibling + "'] td:nth-child(7)")).children("div[name='nightFnUser']").text(),
+                regTime: $($("tr[nightrowid='" + sibling + "'] td:nth-child(7)")).children("div[name='nightFnTime']").text()
+              }
               if ($("tr[nightrowid='" + sibling + "']").attr("greenFlag") == "1") {
                 $($(selRow).children()[5]).append(tmpTxt, newTime);
                 $($(selRow).children()[4]).text(liveVal);
@@ -474,17 +532,25 @@ require_once("assets.php");
                 var startSelectElement = document.getElementById("nightStSel_" + parseInt(i / 2 + 1));
                 var finishSelectElement = document.getElementById("nightFnSel_" + parseInt(i / 2 + 1));
 
-                userNames.forEach(function(name) {
+                userNames.map(name => {
                   var option = document.createElement("option");
                   option.text = name;
                   startSelectElement.add(option);
 
                   var optionClone = option.cloneNode(true);
                   finishSelectElement.add(optionClone);
-                });
+                })
               }
             } else {
               let sibling = parseInt(tmpDayRowID) - 1;
+              startInfo = {
+                userName: $($("tr[nightrowid='" + sibling + "'] td:nth-child(6)")).children("div[name='nightStUser']").text(),
+                regTime: $($("tr[nightrowid='" + sibling + "'] td:nth-child(6)")).children("div[name='nightStTime']").text()
+              }
+              finishInfo = {
+                userName: $($("tr[nightrowid='" + sibling + "'] td:nth-child(7)")).children("div[name='nightFnUser']").text(),
+                regTime: $($("tr[nightrowid='" + sibling + "'] td:nth-child(7)")).children("div[name='nightFnTime']").text()
+              }
               if ($("tr[nightrowid='" + sibling + "']").attr("greenFlag") == "1") {
                 $($($("tr[nightrowid='" + sibling + "']")).children()[5]).append(tmpTxt, newTime);
                 $($($("tr[nightrowid='" + sibling + "']")).children()[4]).text(liveVal);
@@ -497,7 +563,7 @@ require_once("assets.php");
                 var startSelectElement = document.getElementById("nightStSel_" + parseInt(i / 2 + 1));
                 var finishSelectElement = document.getElementById("nightFnSel_" + parseInt(i / 2 + 1));
 
-                userNames.forEach(function(name) {
+                userNames.map(name => {
                   var option = document.createElement("option");
                   option.text = name;
                   startSelectElement.add(option);
@@ -507,6 +573,17 @@ require_once("assets.php");
                 });
               }
             }
+            let data = {
+              firstID: rowID1,
+              secondID: rowID2,
+              currentUser: curretUser,
+              liveTime: liveTime,
+              liveBuild: liveBuild,
+              startInfo: startInfo,
+              finishInfo: finishInfo
+            };
+            finalData(data);
+
             $("#cont_mod").val("");
           }
         }
@@ -587,18 +664,6 @@ require_once("assets.php");
     })
 
   })
-  finalData();
-  setInterval(function() {
-    $.ajax({
-      url: "./getLatestLive.php",
-      type: "get",
-      success: (data) => {
-        liveVal = JSON.parse(data)[0];
-        $("td[status='updated']").text(JSON.parse(data)[0]);
-        $("td[status='updated']").text(JSON.parse(data)[0]);
-      }
-    })
-  }, 30000)
 
   //Select start user name and set it and time for day shift
   function selectDayStName(row) {
@@ -672,8 +737,8 @@ require_once("assets.php");
               console.log(item);
               $("#" + item.firstID).children(":first").css("background", "green");
               $("#" + item.firstID).children(":nth-child(2)").css("background", "green");
-              $("#" + item.secondID).children(":first").css("background", "green");
-              $("#" + item.secondID).children(":nth-child(2)").css("background", "green");
+              // $("#" + item.secondID).children(":first").css("background", "green");
+              // $("#" + item.secondID).children(":nth-child(2)").css("background", "green");
 
               $("#" + item.firstID).children(":nth-child(5)").text(item.liveBuild);
 
@@ -682,12 +747,40 @@ require_once("assets.php");
 
               $("#" + item.firstID).children(":nth-child(7)").children("div:first").append(item.startNm);
               $("#" + item.firstID).children(":nth-child(7)").children("div:nth-child(2)").append(item.startTime);
-              // $("#"+item.firstID).children(":nth-child(7)").children("select").prop("disabled", false);
 
               $("#" + item.firstID).children(":last-child").children("div:first").append(item.finishNm);
               $("#" + item.firstID).children(":last-child").children("div:nth-child(2)").append(item.finishTime);
-              // $("#"+item.firstID).children(":last-child").children("select").prop("disabled", false);
 
+
+              if (search(JSON.parse(data), item.secondID)) {
+
+                var rowid = 0;
+                if (item.firstID.includes('day')) {
+                  rowid = $("#" + item.firstID).attr('dayrowid');
+                } else {
+                  rowid = $("#" + item.firstID).attr('nightrowid');
+                }
+                if (rowid % 2 == 0) {
+                  var startSelectElementID = $("#" + item.firstID).children(":nth-child(7)").children("select").attr('id');
+                  var finishSelectElementID = $("#" + item.firstID).children(":last-child").children("select").attr('id');
+
+                  var startSelectElement = document.getElementById(startSelectElementID);
+                  var finishSelectElement = document.getElementById(finishSelectElementID);
+
+                  userNames.map(name => {
+                    var option = document.createElement("option");
+                    option.text = name;
+                    startSelectElement.add(option);
+
+                    var optionClone = option.cloneNode(true);
+                    finishSelectElement.add(optionClone);
+                  });
+                }
+
+
+                $("#" + item.firstID).children(":nth-child(7)").children("select").prop("disabled", false);
+                $("#" + item.firstID).children(":last-child").children("select").prop("disabled", false);
+              }
             })
           } else {
             console.log("No data");
@@ -698,7 +791,9 @@ require_once("assets.php");
       $.ajax({
         url: "finalData.php",
         type: "POST",
-        data: data,
+        data: {
+          data: data
+        },
         success: () => {
           alert("Saved data successfully!");
         }
@@ -707,6 +802,28 @@ require_once("assets.php");
   }
 
   // 2023-7-20
+  function search(obj, tar) {
+    var state = false;
+    obj.map(item => {
+      if (item.firstID == tar) {
+        state = true;
+      }
+    })
+    return state;
+  }
+
+  function getLiveVal() {
+    $.ajax({
+      url: "getLatestLive.php",
+      type: "get",
+      success: (data) => {
+        liveVal = JSON.parse(data)[0];
+        $("td[status='updated']").text(JSON.parse(data)[0]);
+        $("td[status='updated']").text(JSON.parse(data)[0]);
+      }
+    })
+  }
+
   function getUsers() {
     $.ajax({
       url: "actions.php",
@@ -715,8 +832,7 @@ require_once("assets.php");
         action: 'get_users'
       }
     }).done(function(result) {
-      console.log("users====>", result);
-      var userNames = result;
+      userNames = JSON.parse(result);
     });
   }
 
@@ -749,7 +865,8 @@ require_once("assets.php");
   }
 
   $('#date_picker').on('dp.change', function(e) {
-    read_excel_data($(this).val());
+    var selected = $(this).val().split("-");
+    read_excel_data(selected[2] + "-" + selected[1] + "-" + selected[0]);
     finalData();
   })
 
@@ -779,6 +896,11 @@ require_once("assets.php");
   // Initial function
   read_excel_data();
   getUsers();
+  finalData();
+  getLiveVal();
+  setInterval(function() {
+    getLiveVal();
+  }, 30000)
 </script>
 
 </html>

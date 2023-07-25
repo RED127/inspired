@@ -16,6 +16,7 @@ $tblCycleSetting = 'cycle_setting';
 $tblLive = 'live';
 $tblOPRSetting = 'opr_setting';
 $tblDriverSetting = 'driver_setting';
+$tblFinalData = 'final_data';
 
 $tblContainerDevan = 'container_devan';
 $tblStocking = 'stocking';
@@ -28,12 +29,11 @@ $tblDolly = 'dolly';
 $tblReason = 'reason';
 $tblPart2Kanban = 'part_to_kanban';
 $tblOverstock = 'overstock';
-$tblExcelPick='excel_pick_import';
+$tblExcelPick = 'excel_pick_import';
 
-$db = new mysqli($DB_HOST,$DB_USER,$DB_PASSWORD,$DB_NAME);
+$db = new mysqli($DB_HOST, $DB_USER, $DB_PASSWORD, $DB_NAME);
 // Check connection
-if (mysqli_connect_errno())
-{
+if (mysqli_connect_errno()) {
     echo "Failed to connect to MySQL: " . mysqli_connect_error();
     exit;
 }

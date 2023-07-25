@@ -4576,7 +4576,7 @@ function read_excel($post_data)
             if ($i < count($tmpArr) / 2) {
                 $nightData = $nightData . "<script> contArr_night.push('" . $tmpArr[$i * 2]['Container'] . "') </script>";
                 $nightData = $nightData . "<script> modArr_night.push('" . $tmpArr[$i * 2]['Module'] . "') </script>";
-                $nightData = $nightData . "<tr id='nightRow_" . $tmpArr[$i * 2]['id'] . "' greenFlag='0'>
+                $nightData = $nightData . "<tr id='nightRow_" . $tmpArr[$i * 2]['id'] . "' greenFlag='0'  nightrowid = '" . ($i * 2) . "'>
             <td id='nightConID_" . $tmpArr[$i * 2]['id'] . "'>" . $tmpArr[$i * 2]["Container"] . "</td>
             <td id='nightModID_" . $tmpArr[$i * 2]['id'] . "'>" . $tmpArr[$i * 2]["Module"] . "</td>
             <td>" . $tmpArr[$i * 2]["Qty_Boxes"] .

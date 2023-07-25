@@ -2,8 +2,10 @@
 require_once("config.php");
 require_once("functions.php");
 
+global $DB_NAME, $tblFinalData;
+
 // sql statement for creation table in database
-$sql_table = "CREATE TABLE final_data(
+$sql_table = "CREATE TABLE IF NOT EXISTS " . $tblFinalData . "(
     id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     userNm VARCHAR(10) NOT NULL,
     firstID VARCHAR(20) NOT NULL,
@@ -18,23 +20,14 @@ $sql_table = "CREATE TABLE final_data(
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   //checking if final_data table exists in database
-  if ($result = $db->query("SHOW TABLE STATUS FROM spsonlin_pro LIKE 'final_data'")) {
-    try {
-      if (mysqli_num_rows($result) > 0) {
-        echo "Table final_data already exists" . "<br/>";
-      } else {
-        $db->query($sql_table);
-        echo "Table final_data created successfully" . "<br/>";
-      }
-    } catch (Exception $err) {
-      echo $err;
-    }
+  try {
+    $db->query($sql_table);
+  } catch (Exception $err) {
+    echo $err;
   }
-
   //insert new data into database
 
   $data = $_POST['data'];
-
   $currentUser   =    $data["currentUser"];
   $firstID       =    $data["firstID"];
   $secondID      =    $data["secondID"];
