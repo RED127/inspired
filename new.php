@@ -311,6 +311,8 @@ login_check();
             $('#table_data').html(res);
         })
     }
+
+    getShifts();
 </script>
 
 </html>
