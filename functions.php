@@ -1612,7 +1612,7 @@ function read_area_lane_status($post_data, $direction = NULL)
 
     $areas = array();
 
-    $lanes;
+    $lanes = array();
     $areas_name = $STOCKING_AREAS;
     // if(empty($this_part))
     //     return;
@@ -1661,13 +1661,13 @@ function read_area_lane_status($post_data, $direction = NULL)
     }
 
     $return_html = '<div class="row">';
-    $all_lanes;
+    $all_lanes = array();
     $stock_available_lanes = array();
     $lanes_html = "";
     $lanes_count = array(); //to get the location/area which has the most number of available lanes
     $lanes_have_most_stock = ""; //to get the lane which has the most stocks > 0
     $area_have_most_stock = "";
-    $default_lane_stock;
+    $default_lane_stock = '';
     $areas = array_reverse($areas);
     foreach ($areas as $area => $lanes) {
         $all_lanes = $lanes;
@@ -1774,7 +1774,7 @@ function read_area_lane_status_overview($post_data, $direction = NULL)
 
     $areas = array();
 
-    $lanes;
+    $lanes = [];
     $areas_name = $STOCKING_AREAS;
     // if(empty($this_part))
     //     return;
@@ -1823,13 +1823,13 @@ function read_area_lane_status_overview($post_data, $direction = NULL)
     }
 
     $return_html = '<div class="row">';
-    $all_lanes;
+    $all_lanes = array();
     $stock_available_lanes = array();
     $lanes_html = "";
     $lanes_count = array(); //to get the location/area which has the most number of available lanes
     $lanes_have_most_stock = ""; //to get the lane which has the most stocks > 0
     $area_have_most_stock = "";
-    $default_lane_stock;
+    $default_lane_stock = array();
     $areas = array_reverse($areas);
     foreach ($areas as $area => $lanes) {
         $all_lanes = $lanes;
@@ -2981,12 +2981,12 @@ function read_pick_list($post_data)
     {
         if ($zone != '0') //Help or Other filters
             if ($zone != 'Help') //other filter
-                $query = "SELECT cp.* FROM {$tblConveyancePicks} as cp INNER JOIN part_to_kanban as pk ON cp.kanban = pk.kanban AND cp.kanban_date = '{$pick_date}' AND cp.cycle='{$post_data['cycle']}' AND cp.dolly = '{$zone}' ORDER BY  cp.is_help ASC, cp.is_completed ASC, cp.is_delivered ASC, cp.imported_at ASC, cp.pick_seq ASC, cp.kanban ASC";
+                $query = "SELECT cp.* FROM {$tblConveyancePicks} as cp INNER JOIN part_to_kanban as pk ON cp.kanban = pk.kanban AND cp.kanban_date = '{$pick_date}' AND cp.cycle='{$post_data['cycle']}' AND cp.dolly = '{$zone}' ORDER BY cp.address ASC, cp.is_help ASC, cp.is_completed ASC, cp.is_delivered ASC, cp.imported_at ASC, cp.pick_seq ASC, cp.kanban ASC";
             else //Help filter
-                $query = "SELECT cp.* FROM {$tblConveyancePicks} as cp INNER JOIN part_to_kanban as pk ON cp.kanban = pk.kanban AND cp.kanban_date = '{$pick_date}' AND cp.cycle='{$post_data['cycle']}' AND cp.is_help = 1 ORDER BY  cp.is_help ASC, cp.is_completed ASC, cp.is_delivered ASC, cp.imported_at ASC, cp.pick_seq ASC, cp.kanban ASC";
+                $query = "SELECT cp.* FROM {$tblConveyancePicks} as cp INNER JOIN part_to_kanban as pk ON cp.kanban = pk.kanban AND cp.kanban_date = '{$pick_date}' AND cp.cycle='{$post_data['cycle']}' AND cp.is_help = 1 ORDER BY cp.address ASC, cp.is_help ASC, cp.is_completed ASC, cp.is_delivered ASC, cp.imported_at ASC, cp.pick_seq ASC, cp.kanban ASC";
         else // All filter
             // $query = "SELECT * FROM {$tblConveyancePicks} WHERE kanban_date = '{$pick_date}' AND cycle='{$post_data['cycle']}' ORDER BY  `is_help` ASC, `is_completed` ASC, `imported_at` ASC, `kanban` ASC";
-            $query = "SELECT * FROM {$tblConveyancePicks} WHERE kanban_date = '{$pick_date}' AND cycle='{$post_data['cycle']}' ORDER BY  `is_help` ASC, `is_completed` ASC, `imported_at` ASC, `pick_seq` ASC, `kanban` ASC";
+            $query = "SELECT * FROM {$tblConveyancePicks} WHERE kanban_date = '{$pick_date}' AND cycle='{$post_data['cycle']}' ORDER BY `address` ASC, `is_help` ASC, `is_completed` ASC, `imported_at` ASC, `pick_seq` ASC, `kanban` ASC";
     }
 
 
@@ -4509,7 +4509,7 @@ function read_excel($post_data)
     if ($dayResult->num_rows > 0) {
         // Display the data in an HTML table
         $dayData = "<table id='dayShiftTB'>";
-        $dayData = $dayData . "<tr><th>Cont.</th><th>Mod.</th><th>Boxes</th><th>Counter</th><th>LIVE BUILD</th><th>Load confirm</th><th>S/fill START</th><th>S/fill FINISH</th></tr>";
+        $dayData = $dayData . "<tr><th>Cont.</th><th>Mod.</th><th>Counter</th><th>LIVE BUILD</th><th>Load confirm</th><th>S/fill START</th><th>S/fill FINISH</th></tr>";
         $my_array = [];
         $result_array = [];
         $j = 0;
@@ -4525,7 +4525,6 @@ function read_excel($post_data)
                 $dayData = $dayData . "<tr id='dayRow_" . $tmpArr[$i * 2]['id'] . "' greenFlag='0' dayrowid = '" . ($i * 2) . "'>
             <td id='dayConID_" . $tmpArr[$i * 2]['id'] . "'>" . $tmpArr[$i * 2]["Container"] . "</td>
             <td id='dayModID_" . $tmpArr[$i * 2]['id'] . "'>" . $tmpArr[$i * 2]["Module"] . "</td>
-            <td>" . $tmpArr[$i * 2]["Qty_Boxes"] . "</td>
             <td rowspan='2' id='day_counter_" . ($i + 1) . "' style='padding:unset;'></td><td rowspan='2' id='dayLive_" . $tmpArr[$i]['id'] . "' opt='dayLive'></td>
             <td rowspan='2'  id='dayLoad_" . $tmpArr[$i]['id'] . "' style='padding:2px;'></td>
             <td rowspan='2' name='dayStWork'>
@@ -4550,8 +4549,7 @@ function read_excel($post_data)
                 $dayData = $dayData . "<script> modArr_day.push('" . $tmpArr[$i * 2 + 1]['Module'] . "') </script>";
                 $dayData = $dayData . "<tr id='dayRow_" . $tmpArr[$i * 2 + 1]['id'] . "' greenFlag='0'  dayrowid = '" . ($i * 2 + 1) . "'>
             <td id='dayConID_" . $tmpArr[$i * 2 + 1]['id'] . "'>" . $tmpArr[$i * 2 + 1]["Container"] . "</td>
-            <td id='dayModID_" . $tmpArr[$i * 2 + 1]['id'] . "'>" . $tmpArr[$i * 2 + 1]["Module"] . "</td>
-            <td>" . $tmpArr[$i * 2 + 1]["Qty_Boxes"] . "</td></tr>";
+            <td id='dayModID_" . $tmpArr[$i * 2 + 1]['id'] . "'>" . $tmpArr[$i * 2 + 1]["Module"] . "</td></tr>";
             }
         }
         $dayData = $dayData . "</table>";
@@ -4563,7 +4561,7 @@ function read_excel($post_data)
     if ($nightResult->num_rows > 0) {
         // Display the data in an HTML table
         $nightData = "<table id='nightShiftTB'>";
-        $nightData = $nightData . "<tr><th>Cont.</th><th>Mod.</th><th>Boxes</th><th>Counter</th><th>LIVE BUILD</th><th>Load confirm</th><th>S/fill START</th><th>S/fill FINISH</th></tr>";
+        $nightData = $nightData . "<tr><th>Cont.</th><th>Mod.</th><th>Counter</th><th>LIVE BUILD</th><th>Load confirm</th><th>S/fill START</th><th>S/fill FINISH</th></tr>";
         $my_array = [];
         $result_array = [];
         $j = 0;
@@ -4579,8 +4577,7 @@ function read_excel($post_data)
                 $nightData = $nightData . "<tr id='nightRow_" . $tmpArr[$i * 2]['id'] . "' greenFlag='0'  nightrowid = '" . ($i * 2) . "'>
             <td id='nightConID_" . $tmpArr[$i * 2]['id'] . "'>" . $tmpArr[$i * 2]["Container"] . "</td>
             <td id='nightModID_" . $tmpArr[$i * 2]['id'] . "'>" . $tmpArr[$i * 2]["Module"] . "</td>
-            <td>" . $tmpArr[$i * 2]["Qty_Boxes"] .
-                    "</td><td rowspan='2' id='night_counter_" . ($i + 1) . "' style='padding:unset;'></td><td rowspan='2' id='nightLive_" . $tmpArr[$i]['id'] . "' opt='nightLive'></td>
+            <td rowspan='2' id='night_counter_" . ($i + 1) . "' style='padding:unset;'></td><td rowspan='2' id='nightLive_" . $tmpArr[$i]['id'] . "' opt='nightLive'></td>
             <td rowspan='2' id='nightLoad_" . $tmpArr[$i]['id'] . "' style='padding:2px;'></td>
             <td rowspan='2' name='nightStWork'>
                 <div id='nightStUser_" . ($i + 1) . "' name='nightStUser'></div>
@@ -4604,8 +4601,7 @@ function read_excel($post_data)
                 $nightData = $nightData . "<script> modArr_night.push('" . $tmpArr[$i * 2 + 1]['Module'] . "') </script>";
                 $nightData = $nightData . "<tr id='nightRow_" . $tmpArr[$i * 2 + 1]['id'] . "' greenFlag='0' nightrowid='" . ($i * 2 + 1) . "'>
             <td id='nightConID_" . $tmpArr[$i * 2 + 1]['id'] . "'>" . $tmpArr[$i * 2 + 1]["Container"] . "</td>
-            <td id='nightModID_" . $tmpArr[$i * 2 + 1]['id'] . "'>" . $tmpArr[$i * 2 + 1]["Module"] . "</td>
-            <td>" . $tmpArr[$i * 2 + 1]["Qty_Boxes"] . "</td></tr>";
+            <td id='nightModID_" . $tmpArr[$i * 2 + 1]['id'] . "'>" . $tmpArr[$i * 2 + 1]["Module"] . "</td></tr>";
             }
         }
         $nightData = $nightData . "</table>";
