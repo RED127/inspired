@@ -202,7 +202,6 @@ require_once("assets.php");
                         'day': getTableData('dayShiftTB'),
                         'night': getTableData('nightShiftTB')
                       };
-                      console.log(data);
                       $.ajax({
                         url: 'system_excel_export.php',
                         type: 'post',
@@ -315,316 +314,250 @@ require_once("assets.php");
         next: 'fas fa-angle-right',
       }
     });
-    $("#day_build_amount").keydown(function(e) {
-      if (e.keyCode === 13) {
-        let segVal_Day = ($("#day_build_amount").val() / dayRowNum * 2).toFixed(2);
-        for (let i = 1; i <= dayRowNum; i++) {
-          $("#day_counter_" + i).text((segVal_Day * i).toFixed(2));
+  })
+  $("#day_build_amount").keydown(function(e) {
+    if (e.keyCode === 13) {
+      let segVal_Day = ($("#day_build_amount").val() / Math.ceil(dayRowNum / 2)).toFixed(2);
+      for (let i = 1; i <= Math.ceil(dayRowNum / 2); i++) {
+        if (i == Math.ceil(dayRowNum / 2)) {
+          $("#day_counter_" + i).text($("#day_build_amount").val());
+        } else {
+          $("#day_counter_" + i).text(Math.ceil(segVal_Day * i));
         }
       }
-    })
+    }
+  })
 
-    $("#night_build_amount").keydown(function(e) {
-      if (e.keyCode === 13) {
-        let segVal_Night = ($("#night_build_amount").val() / nightRowNum * 2).toFixed(2);
-        for (let j = 1; j <= nightRowNum; j++) {
-          $("#night_counter_" + j).text((segVal_Night * j).toFixed(2));
+  $("#night_build_amount").keydown(function(e) {
+    if (e.keyCode === 13) {
+      let segVal_Night = ($("#night_build_amount").val() / Math.ceil(nightRowNum / 2)).toFixed(2);
+      for (let j = 1; j <= Math.ceil(nightRowNum / 2); j++) {
+        if (j == Math.ceil(nightRowNum / 2)) {
+          $("#night_counter_" + j).text($("#night_build_amount").val());
+        } else {
+          $("#night_counter_" + j).text(Math.ceil(segVal_Night * j));
         }
       }
-    })
+    }
+  })
 
 
-    $("#cont_mod").keydown(function(e) {
-      if (e.keyCode === 13) {
-        let cont = $("#cont_mod").val().slice(0, 5);
-        let mod = $("#cont_mod").val().slice(5);
-        let contModStr = $("#cont_mod").val();
+  $("#cont_mod").keydown(function(e) {
+    if (e.keyCode === 13) {
+      let cont = $("#cont_mod").val().slice(0, 5);
+      let mod = $("#cont_mod").val().slice(5);
+      let contModStr = $("#cont_mod").val();
 
-        // in case of day shift
-        for (let i = 0; i < dayRowNum - 1; i++) {
-          let contVal = $($("tr[dayrowid='" + i + "'] td:first")).text();
-          let modVal = $($("tr[dayrowid='" + i + "'] td:nth-child(2)")).text();
-          if (contModStr.includes(contVal) && contModStr.includes(modVal)) {
-            $($("tr[dayrowid='" + i + "'] td:first")).css("background-color", "green");
-            $($("tr[dayrowid='" + i + "'] td:nth-child(2)")).css("background-color", "green");
-            $($("#dayShiftTB tr")[i + 1]).attr("greenFlag", "1");
-            let selRow = $($("#dayShiftTB tr")[i + 1]);
-            let loadVal = parseInt($($(selRow).children()[4]).attr("load"));
-            let tmpDayRowID = $(selRow).attr("dayrowid");
-            let tmpTxt = "<span style='color:#063c49; font-weight:700;'><?php echo $_SESSION['user']['username'] ?></span>";
-            let newTime = "<p style='margin:unset;'>" + new Date().getHours() + ":" + new Date().getMinutes() + "</p>";
+      // in case of day shift
+      for (let i = 0; i < dayRowNum - 1; i++) {
+        let contVal = $($("tr[dayrowid='" + i + "'] td:first")).text();
+        let modVal = $($("tr[dayrowid='" + i + "'] td:nth-child(2)")).text();
+        if (contModStr.includes(contVal) && contModStr.includes(modVal)) {
+          $($("tr[dayrowid='" + i + "'] td:first")).css("background-color", "green");
+          $($("tr[dayrowid='" + i + "'] td:nth-child(2)")).css("background-color", "green");
+          $($("#dayShiftTB tr")[i + 1]).attr("greenFlag", "1");
+          let selRow = $($("#dayShiftTB tr")[i + 1]);
+          let loadVal = parseInt($($(selRow).children()[4]).attr("load"));
+          let tmpDayRowID = $(selRow).attr("dayrowid");
+          let tmpTxt = "<span style='color:#063c49; font-weight:700;'><?php echo $_SESSION['user']['username'] ?></span>";
+          let newTime = "<p style='margin:unset;'>" + new Date().getHours() + ":" + new Date().getMinutes() + "</p>";
 
-            // Save Data
-            var rowID1 = $("tr[dayrowid='" + i + "']").attr("id");
-            var rowID2 = $('#' + rowID1).next().next().next().attr("id");
-            var curretUser = '<?php echo $_SESSION['user']['username'] ?>';
-            var liveTime = new Date().getHours() + ":" + new Date().getMinutes();
-            var liveBuild = liveVal;
-            var startInfo = {}
-            var finishInfo = {}
-            // Save Data End
+          // Save Data
+          var rowID1 = $("tr[dayrowid='" + i + "']").attr("id");
+          var rowID2 = $('#' + rowID1).next().next().next().attr("id");
+          var curretUser = '<?php echo $_SESSION['user']['username'] ?>';
+          var liveTime = new Date().getHours() + ":" + new Date().getMinutes();
+          var liveBuild = liveVal;
+          var startInfo = {}
+          var finishInfo = {}
+          // Save Data End
 
-            if (tmpDayRowID % 2 === 0) {
-              let sibling = parseInt(tmpDayRowID) + 1;
-              startInfo = {
-                userName: $($("tr[dayrowid='" + sibling + "'] td:nth-child(5)")).children("div[name='dayStUser']").text(),
-                regTime: $($("tr[dayrowid='" + sibling + "'] td:nth-child(5)")).children("div[name='dayStTime']").text()
-              }
-              finishInfo = {
-                userName: $($("tr[dayrowid='" + sibling + "'] td:nth-child(6)")).children("div[name='dayFnUser']").text(),
-                regTime: $($("tr[dayrowid='" + sibling + "'] td:nth-child(6)")).children("div[name='dayFnTime']").text()
-              }
-              if ($("tr[dayrowid='" + sibling + "']").attr("greenFlag") == "1") {
-                $($(selRow).children()[4]).append(tmpTxt, newTime);
-                $($(selRow).children()[3]).text(liveVal);
-                $($(selRow).children()[3]).attr('status', );
-                $($(selRow).children()[3]).attr("daylive", "true");
-                var dayStSel = document.getElementById("dayStSel_" + parseInt(i / 2 + 1));
-                var dayFnSel = document.getElementById("dayFnSel_" + parseInt(i / 2 + 1));
-                dayStSel.disabled = false;
-                dayFnSel.disabled = false;
-                var startSelectElement = document.getElementById("dayStSel_" + parseInt(i / 2 + 1));
-                var finishSelectElement = document.getElementById("dayFnSel_" + parseInt(i / 2 + 1));
-                $('#' + 'dayStSel_' + parseInt(i / 2 + 1)).parent().prev().css('background-color', 'green');
-
-                userNames.map(name => {
-                  var option = document.createElement("option");
-                  option.text = name;
-                  startSelectElement.add(option);
-
-                  var optionClone = option.cloneNode(true);
-                  finishSelectElement.add(optionClone);
-                })
-              }
-            } else {
-              let sibling = parseInt(tmpDayRowID) - 1;
-              startInfo = {
-                userName: $($("tr[dayrowid='" + sibling + "'] td:nth-child(5)")).children("div[name='dayStUser']").text(),
-                regTime: $($("tr[dayrowid='" + sibling + "'] td:nth-child(5)")).children("div[name='dayStTime']").text()
-              }
-              finishInfo = {
-                userName: $($("tr[dayrowid='" + sibling + "'] td:nth-child(6)")).children("div[name='dayFnUser']").text(),
-                regTime: $($("tr[dayrowid='" + sibling + "'] td:nth-child(6)")).children("div[name='dayFnTime']").text()
-              }
-              if ($("tr[dayrowid='" + sibling + "']").attr("greenFlag") == "1") {
-                $($($("tr[dayrowid='" + sibling + "']")).children()[4]).append(tmpTxt, newTime);
-                $($($("tr[dayrowid='" + sibling + "']")).children()[3]).text(liveVal);
-                $($($("tr[dayrowid='" + sibling + "']")).children()[3]).attr('status', 'updated');
-                $($($("tr[dayrowid='" + sibling + "']")).children()[3]).attr("daylive", "true");
-                var dayStSel = document.getElementById("dayStSel_" + parseInt(i / 2 + 1));
-                var dayFnSel = document.getElementById("dayFnSel_" + parseInt(i / 2 + 1));
-                dayStSel.disabled = false;
-                dayFnSel.disabled = false;
-                var startSelectElement = document.getElementById("dayStSel_" + parseInt(i / 2 + 1));
-                var finishSelectElement = document.getElementById("dayFnSel_" + parseInt(i / 2 + 1));
-                $('#' + 'dayStSel_' + parseInt(i / 2 + 1)).parent().prev().css('background-color', 'green');
-                userNames.map(name => {
-                  var option = document.createElement("option");
-                  option.text = name;
-                  startSelectElement.add(option);
-
-                  var optionClone = option.cloneNode(true);
-                  finishSelectElement.add(optionClone);
-                });
-              }
+          if (tmpDayRowID % 2 === 0) {
+            let sibling = parseInt(tmpDayRowID) + 1;
+            startInfo = {
+              userName: $($("tr[dayrowid='" + sibling + "'] td:nth-child(5)")).children("div[name='dayStUser']").text(),
+              regTime: $($("tr[dayrowid='" + sibling + "'] td:nth-child(5)")).children("div[name='dayStTime']").text()
             }
-            let data = {
-              firstID: rowID1,
-              secondID: rowID2,
-              currentUser: curretUser,
-              liveTime: liveTime,
-              liveBuild: liveBuild,
-              startInfo: startInfo,
-              finishInfo: finishInfo
-            };
-            finalData(data);
-
-            $("#cont_mod").val("");
-
-          }
-        }
-
-        // in case of night shift
-        for (let i = 0; i < nightRowNum; i++) {
-          let contVal = $($("tr[nightrowid='" + i + "'] td:first")).text();
-          let modVal = $($("tr[nightrowid='" + i + "'] td:nth-child(2)")).text();
-          if (contModStr.includes(contVal) && contModStr.includes(modVal)) {
-            $($("tr[nightrowid='" + i + "'] td:first")).css("background-color", "green");
-            $($("tr[nightrowid='" + i + "'] td:nth-child(2)")).css("background-color", "green");
-            $($("#nightShiftTB tr")[i + 1]).attr("greenFlag", "1");
-            let selRow = $($("#nightShiftTB tr")[i + 1]);
-            let loadVal = parseInt($($(selRow).children()[4]).attr("load"));
-            let tmpDayRowID = $(selRow).attr("nightrowid");
-            let tmpTxt = "<span style='color:#063c49; font-weight:700;'><?php echo $_SESSION['user']['username'] ?></span><br/>";
-            let newTime = "<p style='margin:unset;'>" + new Date().getHours() + ":" + new Date().getMinutes() + "</p>";
-
-            // Save Data
-            var rowID1 = $("tr[nightrowid='" + i + "']").attr("id");
-            var rowID2 = $('#' + rowID1).next().next().next().attr("id");
-            var curretUser = '<?php echo $_SESSION['user']['username'] ?>';
-            var liveTime = new Date().getHours() + ":" + new Date().getMinutes();
-            var liveBuild = liveVal;
-            var startInfo = {}
-            var finishInfo = {}
-            // Save Data End
-
-            if (tmpDayRowID % 2 === 0) {
-              let sibling = parseInt(tmpDayRowID) + 1;
-              startInfo = {
-                userName: $($("tr[nightrowid='" + sibling + "'] td:nth-child(5)")).children("div[name='nightStUser']").text(),
-                regTime: $($("tr[nightrowid='" + sibling + "'] td:nth-child(5)")).children("div[name='nightStTime']").text()
-              }
-              finishInfo = {
-                userName: $($("tr[nightrowid='" + sibling + "'] td:nth-child(6)")).children("div[name='nightFnUser']").text(),
-                regTime: $($("tr[nightrowid='" + sibling + "'] td:nth-child(6)")).children("div[name='nightFnTime']").text()
-              }
-              if ($("tr[nightrowid='" + sibling + "']").attr("greenFlag") == "1") {
-                $($(selRow).children()[4]).append(tmpTxt, newTime);
-                $($(selRow).children()[3]).text(liveVal);
-                $($(selRow).children()[3]).attr('status', 'updated');
-                $($(selRow).children()[3]).attr("daylive", "true");
-                var nightStSel = document.getElementById("nightStSel_" + parseInt(i / 2 + 1));
-                var nightFnSel = document.getElementById("nightFnSel_" + parseInt(i / 2 + 1));
-                nightStSel.disabled = false;
-                nightFnSel.disabled = false;
-                var startSelectElement = document.getElementById("nightStSel_" + parseInt(i / 2 + 1));
-                var finishSelectElement = document.getElementById("nightFnSel_" + parseInt(i / 2 + 1));
-
-                $('#' + 'nightStSel_' + parseInt(i / 2 + 1)).parent().prev().css('background-color', 'green');
-
-                userNames.map(name => {
-                  var option = document.createElement("option");
-                  option.text = name;
-                  startSelectElement.add(option);
-
-                  var optionClone = option.cloneNode(true);
-                  finishSelectElement.add(optionClone);
-                })
-              }
-            } else {
-              let sibling = parseInt(tmpDayRowID) - 1;
-              startInfo = {
-                userName: $($("tr[nightrowid='" + sibling + "'] td:nth-child(5)")).children("div[name='nightStUser']").text(),
-                regTime: $($("tr[nightrowid='" + sibling + "'] td:nth-child(5)")).children("div[name='nightStTime']").text()
-              }
-              finishInfo = {
-                userName: $($("tr[nightrowid='" + sibling + "'] td:nth-child(6)")).children("div[name='nightFnUser']").text(),
-                regTime: $($("tr[nightrowid='" + sibling + "'] td:nth-child(6)")).children("div[name='nightFnTime']").text()
-              }
-              if ($("tr[nightrowid='" + sibling + "']").attr("greenFlag") == "1") {
-                $($($("tr[nightrowid='" + sibling + "']")).children()[4]).append(tmpTxt, newTime);
-                $($($("tr[nightrowid='" + sibling + "']")).children()[3]).text(liveVal);
-                $($($("tr[nightrowid='" + sibling + "']")).children()[3]).attr('status', 'updated');
-                $($($("tr[nightrowid='" + sibling + "']")).children()[3]).attr("daylive", "true");
-                var nightStSel = document.getElementById("nightStSel_" + parseInt(i / 2 + 1));
-                var nightFnSel = document.getElementById("nightFnSel_" + parseInt(i / 2 + 1));
-                nightStSel.disabled = false;
-                nightFnSel.disabled = false;
-                var startSelectElement = document.getElementById("nightStSel_" + parseInt(i / 2 + 1));
-                var finishSelectElement = document.getElementById("nightFnSel_" + parseInt(i / 2 + 1));
-
-                $('#' + 'nightStSel_' + parseInt(i / 2 + 1)).parent().prev().css('background-color', 'green');
-
-                userNames.map(name => {
-                  var option = document.createElement("option");
-                  option.text = name;
-                  startSelectElement.add(option);
-
-                  var optionClone = option.cloneNode(true);
-                  finishSelectElement.add(optionClone);
-                });
-              }
+            finishInfo = {
+              userName: $($("tr[dayrowid='" + sibling + "'] td:nth-child(6)")).children("div[name='dayFnUser']").text(),
+              regTime: $($("tr[dayrowid='" + sibling + "'] td:nth-child(6)")).children("div[name='dayFnTime']").text()
             }
-            let data = {
-              firstID: rowID1,
-              secondID: rowID2,
-              currentUser: curretUser,
-              liveTime: liveTime,
-              liveBuild: liveBuild,
-              startInfo: startInfo,
-              finishInfo: finishInfo
-            };
-            finalData(data);
+            if ($("tr[dayrowid='" + sibling + "']").attr("greenFlag") == "1") {
+              $($(selRow).children()[4]).append(tmpTxt, newTime);
+              $($(selRow).children()[3]).text(liveVal);
+              $($(selRow).children()[3]).attr('status', );
+              $($(selRow).children()[3]).attr("daylive", "true");
+              var dayStSel = document.getElementById("dayStSel_" + parseInt(i / 2 + 1));
+              var dayFnSel = document.getElementById("dayFnSel_" + parseInt(i / 2 + 1));
+              dayStSel.disabled = false;
+              dayFnSel.disabled = false;
+              var startSelectElement = document.getElementById("dayStSel_" + parseInt(i / 2 + 1));
+              var finishSelectElement = document.getElementById("dayFnSel_" + parseInt(i / 2 + 1));
+              $('#' + 'dayStSel_' + parseInt(i / 2 + 1)).parent().prev().css('background-color', 'green');
 
-            $("#cont_mod").val("");
+              userNames.map(name => {
+                var option = document.createElement("option");
+                option.text = name;
+                startSelectElement.add(option);
+
+                var optionClone = option.cloneNode(true);
+                finishSelectElement.add(optionClone);
+              })
+            }
+          } else {
+            let sibling = parseInt(tmpDayRowID) - 1;
+            startInfo = {
+              userName: $($("tr[dayrowid='" + sibling + "'] td:nth-child(5)")).children("div[name='dayStUser']").text(),
+              regTime: $($("tr[dayrowid='" + sibling + "'] td:nth-child(5)")).children("div[name='dayStTime']").text()
+            }
+            finishInfo = {
+              userName: $($("tr[dayrowid='" + sibling + "'] td:nth-child(6)")).children("div[name='dayFnUser']").text(),
+              regTime: $($("tr[dayrowid='" + sibling + "'] td:nth-child(6)")).children("div[name='dayFnTime']").text()
+            }
+            if ($("tr[dayrowid='" + sibling + "']").attr("greenFlag") == "1") {
+              $($($("tr[dayrowid='" + sibling + "']")).children()[4]).append(tmpTxt, newTime);
+              $($($("tr[dayrowid='" + sibling + "']")).children()[3]).text(liveVal);
+              $($($("tr[dayrowid='" + sibling + "']")).children()[3]).attr('status', 'updated');
+              $($($("tr[dayrowid='" + sibling + "']")).children()[3]).attr("daylive", "true");
+              var dayStSel = document.getElementById("dayStSel_" + parseInt(i / 2 + 1));
+              var dayFnSel = document.getElementById("dayFnSel_" + parseInt(i / 2 + 1));
+              dayStSel.disabled = false;
+              dayFnSel.disabled = false;
+              var startSelectElement = document.getElementById("dayStSel_" + parseInt(i / 2 + 1));
+              var finishSelectElement = document.getElementById("dayFnSel_" + parseInt(i / 2 + 1));
+              $('#' + 'dayStSel_' + parseInt(i / 2 + 1)).parent().prev().css('background-color', 'green');
+              userNames.map(name => {
+                var option = document.createElement("option");
+                option.text = name;
+                startSelectElement.add(option);
+
+                var optionClone = option.cloneNode(true);
+                finishSelectElement.add(optionClone);
+              });
+            }
           }
+          let data = {
+            firstID: rowID1,
+            secondID: rowID2,
+            currentUser: curretUser,
+            liveTime: liveTime,
+            liveBuild: liveBuild,
+            startInfo: startInfo,
+            finishInfo: finishInfo
+          };
+          finalData(data);
+
+          $("#cont_mod").val("");
+
         }
       }
-    })
 
-    // when click Fill Finish select on Day Shift table.
-    // $("select[name='Fill Start']").on("change", function() {
-    //   console.log($(this));
-    // })
+      // in case of night shift
+      for (let i = 0; i < nightRowNum; i++) {
+        let contVal = $($("tr[nightrowid='" + i + "'] td:first")).text();
+        let modVal = $($("tr[nightrowid='" + i + "'] td:nth-child(2)")).text();
+        if (contModStr.includes(contVal) && contModStr.includes(modVal)) {
+          $($("tr[nightrowid='" + i + "'] td:first")).css("background-color", "green");
+          $($("tr[nightrowid='" + i + "'] td:nth-child(2)")).css("background-color", "green");
+          $($("#nightShiftTB tr")[i + 1]).attr("greenFlag", "1");
+          let selRow = $($("#nightShiftTB tr")[i + 1]);
+          let loadVal = parseInt($($(selRow).children()[4]).attr("load"));
+          let tmpDayRowID = $(selRow).attr("nightrowid");
+          let tmpTxt = "<span style='color:#063c49; font-weight:700;'><?php echo $_SESSION['user']['username'] ?></span><br/>";
+          let newTime = "<p style='margin:unset;'>" + new Date().getHours() + ":" + new Date().getMinutes() + "</p>";
 
-    // when click Fill Start select on Day Shift table.
-    $("select[name='Day Finish']").on("change", function() {
-      // if($(this).parent)
-      if ($(this).parent().prev().children("div[name='dayStUser']").text().length > 0) {
-        let rowID1 = $(this).parent().parent().attr("id");
-        let rowID2 = $('#' + rowID1).next().next().next().attr("id");
-        let curretUser = '<?php echo $_SESSION['user']['username'] ?>';
-        let liveTime = $(this).parent().prev().prev().children("p").text();
-        let liveBuild = $(this).parent().prev().prev().prev().text();
-        let startInfo = {
-          userName: $(this).parent().prev().children("div[name='dayStUser']").text(),
-          regTime: $(this).parent().prev().children("div[name='dayStTime']").text()
-        }
-        let finishInfo = {
-          userName: $(this).prev().prev().text(),
-          regTime: $(this).prev().text(),
-        }
+          // Save Data
+          var rowID1 = $("tr[nightrowid='" + i + "']").attr("id");
+          var rowID2 = $('#' + rowID1).next().next().next().attr("id");
+          var curretUser = '<?php echo $_SESSION['user']['username'] ?>';
+          var liveTime = new Date().getHours() + ":" + new Date().getMinutes();
+          var liveBuild = liveVal;
+          var startInfo = {}
+          var finishInfo = {}
+          // Save Data End
 
-        let data = {
-          firstID: rowID1,
-          secondID: rowID2,
-          currentUser: curretUser,
-          liveTime: liveTime,
-          liveBuild: liveBuild,
-          startInfo: startInfo,
-          finishInfo: finishInfo
+          if (tmpDayRowID % 2 === 0) {
+            let sibling = parseInt(tmpDayRowID) + 1;
+            startInfo = {
+              userName: $($("tr[nightrowid='" + sibling + "'] td:nth-child(5)")).children("div[name='nightStUser']").text(),
+              regTime: $($("tr[nightrowid='" + sibling + "'] td:nth-child(5)")).children("div[name='nightStTime']").text()
+            }
+            finishInfo = {
+              userName: $($("tr[nightrowid='" + sibling + "'] td:nth-child(6)")).children("div[name='nightFnUser']").text(),
+              regTime: $($("tr[nightrowid='" + sibling + "'] td:nth-child(6)")).children("div[name='nightFnTime']").text()
+            }
+            if ($("tr[nightrowid='" + sibling + "']").attr("greenFlag") == "1") {
+              $($(selRow).children()[4]).append(tmpTxt, newTime);
+              $($(selRow).children()[3]).text(liveVal);
+              $($(selRow).children()[3]).attr('status', 'updated');
+              $($(selRow).children()[3]).attr("daylive", "true");
+              var nightStSel = document.getElementById("nightStSel_" + parseInt(i / 2 + 1));
+              var nightFnSel = document.getElementById("nightFnSel_" + parseInt(i / 2 + 1));
+              nightStSel.disabled = false;
+              nightFnSel.disabled = false;
+              var startSelectElement = document.getElementById("nightStSel_" + parseInt(i / 2 + 1));
+              var finishSelectElement = document.getElementById("nightFnSel_" + parseInt(i / 2 + 1));
+
+              $('#' + 'nightStSel_' + parseInt(i / 2 + 1)).parent().prev().css('background-color', 'green');
+
+              userNames.map(name => {
+                var option = document.createElement("option");
+                option.text = name;
+                startSelectElement.add(option);
+
+                var optionClone = option.cloneNode(true);
+                finishSelectElement.add(optionClone);
+              })
+            }
+          } else {
+            let sibling = parseInt(tmpDayRowID) - 1;
+            startInfo = {
+              userName: $($("tr[nightrowid='" + sibling + "'] td:nth-child(5)")).children("div[name='nightStUser']").text(),
+              regTime: $($("tr[nightrowid='" + sibling + "'] td:nth-child(5)")).children("div[name='nightStTime']").text()
+            }
+            finishInfo = {
+              userName: $($("tr[nightrowid='" + sibling + "'] td:nth-child(6)")).children("div[name='nightFnUser']").text(),
+              regTime: $($("tr[nightrowid='" + sibling + "'] td:nth-child(6)")).children("div[name='nightFnTime']").text()
+            }
+            if ($("tr[nightrowid='" + sibling + "']").attr("greenFlag") == "1") {
+              $($($("tr[nightrowid='" + sibling + "']")).children()[4]).append(tmpTxt, newTime);
+              $($($("tr[nightrowid='" + sibling + "']")).children()[3]).text(liveVal);
+              $($($("tr[nightrowid='" + sibling + "']")).children()[3]).attr('status', 'updated');
+              $($($("tr[nightrowid='" + sibling + "']")).children()[3]).attr("daylive", "true");
+              var nightStSel = document.getElementById("nightStSel_" + parseInt(i / 2 + 1));
+              var nightFnSel = document.getElementById("nightFnSel_" + parseInt(i / 2 + 1));
+              nightStSel.disabled = false;
+              nightFnSel.disabled = false;
+              var startSelectElement = document.getElementById("nightStSel_" + parseInt(i / 2 + 1));
+              var finishSelectElement = document.getElementById("nightFnSel_" + parseInt(i / 2 + 1));
+
+              $('#' + 'nightStSel_' + parseInt(i / 2 + 1)).parent().prev().css('background-color', 'green');
+
+              userNames.map(name => {
+                var option = document.createElement("option");
+                option.text = name;
+                startSelectElement.add(option);
+
+                var optionClone = option.cloneNode(true);
+                finishSelectElement.add(optionClone);
+              });
+            }
+          }
+          let data = {
+            firstID: rowID1,
+            secondID: rowID2,
+            currentUser: curretUser,
+            liveTime: liveTime,
+            liveBuild: liveBuild,
+            startInfo: startInfo,
+            finishInfo: finishInfo
+          };
+          finalData(data);
+
+          $("#cont_mod").val("");
         }
-        finalData(data);
-      } else {
-        alert("You didn't select Start Option.");
-        return false;
       }
-    })
-
-    // when click Fill Start select on Night Shift table.
-    $("select[name='Night Finish']").on("change", function() {
-      // if($(this).parent)
-      if ($(this).parent().prev().children("div[name='nightStUser']").text().length > 0) {
-        let rowID1 = $(this).parent().parent().attr("id");
-        let rowID2 = $('#' + rowID1).next().next().next().attr("id");
-        let curretUser = '<?php echo $_SESSION['user']['username'] ?>';
-        let liveTime = $(this).parent().prev().prev().children("p").text();
-        let liveBuild = $(this).parent().prev().prev().prev().text();
-        let startInfo = {
-          userName: $(this).parent().prev().children("div[name='nightStUser']").text(),
-          regTime: $(this).parent().prev().children("div[name='nightStTime']").text()
-        }
-        let finishInfo = {
-          userName: $(this).prev().prev().text(),
-          regTime: $(this).prev().text(),
-        }
-
-        let data = {
-          firstID: rowID1,
-          secondID: rowID2,
-          currentUser: curretUser,
-          liveTime: liveTime,
-          liveBuild: liveBuild,
-          startInfo: startInfo,
-          finishInfo: finishInfo
-        }
-        finalData(data);
-      } else {
-        alert("You didn't select Start Option.");
-        return false;
-      }
-    })
-
+    }
   })
 
   //Select start user name and set it and time for day shift
@@ -641,6 +574,7 @@ require_once("assets.php");
 
     startUserElement.textContent = username;
     startTimeElement.textContent = currentTime;
+    saveData(row, 'start', 'day');
   }
   //Select finish user name and set it and time for day shift
   function selectDayFnName(row) {
@@ -657,7 +591,7 @@ require_once("assets.php");
 
     finishUserElement.textContent = username;
     finishTimeElement.textContent = currentTime;
-
+    saveData(row, 'finish', 'day');
   }
   //Select start user name and set it and time for night shift
   function selectNightStName(row) {
@@ -674,6 +608,7 @@ require_once("assets.php");
 
     startUserElement.textContent = username;
     startTimeElement.textContent = currentTime;
+    saveData(row, 'start', 'night');
   }
   //Select finish user name and set it and time for night shift
   function selectNightFnName(row) {
@@ -690,6 +625,7 @@ require_once("assets.php");
 
     finishUserElement.textContent = username;
     finishTimeElement.textContent = currentTime;
+    saveData(row, 'finish', 'night');
   }
 
   // fetching or saving final data
@@ -717,15 +653,17 @@ require_once("assets.php");
                 $("#" + item.firstID).children(":nth-child(5)").css("background", "green");
               }
 
+              if (item.finishNm && item.finishTime) {
+                $("#" + item.firstID).children(":nth-child(6)").css("background", "green");
+              }
+
               $("#" + item.firstID).children(":nth-child(6)").children("div:first").append(item.startNm);
               $("#" + item.firstID).children(":nth-child(6)").children("div:nth-child(2)").append(item.startTime);
 
               $("#" + item.firstID).children(":last-child").children("div:first").append(item.finishNm);
               $("#" + item.firstID).children(":last-child").children("div:nth-child(2)").append(item.finishTime);
 
-
               if (search(JSON.parse(data), item.secondID)) {
-
                 var rowid = 0;
                 if (item.firstID.includes('day')) {
                   rowid = $("#" + item.firstID).attr('dayrowid');
@@ -747,6 +685,8 @@ require_once("assets.php");
                     var optionClone = option.cloneNode(true);
                     finishSelectElement.add(optionClone);
                   });
+                  $("#" + item.firstID).children(":nth-child(6)").children(":last").val(item.startNm);
+                  $("#" + item.firstID).children(":last-child").children(":last").val(item.finishNm);
                 }
 
 
@@ -767,13 +707,73 @@ require_once("assets.php");
           data: data
         },
         success: () => {
-          alert("Saved data successfully!");
+          console.log("Data is saved successfully.");
         }
       })
     }
   }
 
   // 2023-7-20
+
+  function saveData(row, col, state) {
+    var rowID1, rowID2, curretUser, liveTime, liveBuild;
+    var startInfo = {};
+    var finishInfo = {};
+
+    if (col == 'start') {
+      var selID;
+      if (state == 'day') {
+        selID = '#dayStSel_' + row;
+      } else {
+        selID = '#nightStSel_' + row;
+      }
+      rowID1 = $(selID).parent().parent().attr("id");
+      rowID2 = $('#' + rowID1).next().next().next().attr("id");
+      curretUser = '<?php echo $_SESSION['user']['username'] ?>';
+      liveTime = $(selID).parent().prev().prev().children("p").text();
+      liveBuild = $(selID).parent().prev().prev().text();
+      startInfo = {
+        userName: $(selID).parent().children(":first").text(),
+        regTime: $(selID).parent().children(":nth-child(2)").text()
+      }
+      finishInfo = {
+        userName: $(selID).parent().next().children(":first").text(),
+        regTime: $(selID).parent().next().children(":nth-child(2)").text()
+      }
+    } else {
+      var selID;
+      if (state == 'day') {
+        selID = '#dayFnSel_' + row;
+      } else {
+        selID = '#nightFnSel_' + row;
+      }
+      rowID1 = $(selID).parent().parent().attr("id");
+      rowID2 = $('#' + rowID1).next().next().next().attr("id");
+      curretUser = '<?php echo $_SESSION['user']['username'] ?>';
+      liveTime = $(selID).parent().prev().prev().children("p").text();
+      liveBuild = $(selID).parent().prev().prev().prev().text();
+      startInfo = {
+        userName: $(selID).parent().prev().children(":first").text(),
+        regTime: $(selID).parent().prev().children(":nth-child(2)").text()
+      }
+      finishInfo = {
+        userName: $(selID).prev().prev().text(),
+        regTime: $(selID).prev().text(),
+      }
+    }
+
+    let data = {
+      firstID: rowID1,
+      secondID: rowID2,
+      currentUser: curretUser,
+      liveTime: liveTime,
+      liveBuild: liveBuild,
+      startInfo: startInfo,
+      finishInfo: finishInfo
+    }
+
+    finalData(data);
+  }
 
   function activeStartBox(id) {
     $('#' + id).parent().prev().css('background-color', 'green');
@@ -825,7 +825,6 @@ require_once("assets.php");
         liveVal = JSON.parse(data)[0];
         var dayLastID = '';
         for (let i = 0; i < ($('#dayShiftTB tr').length - 1); i++) {
-          console.log(Number($('tr[dayrowid="' + i + '"]').children(':nth-child(4)').text()));
           if (i % 2 == 0 && $('tr[dayrowid="' + i + '"]').children(':first').css('background-color') == 'rgb(0, 128, 0)' && Number($('tr[dayrowid="' + i + '"]').children(':nth-child(4)').text()) && !Number($('tr[dayrowid="' + (i + 2) + '"]').children(':nth-child(4)').text()))
             dayLastID = i + 2;
         }
@@ -876,7 +875,12 @@ require_once("assets.php");
       else
         var dataCells = dataRows[i].getElementsByTagName("td");
       for (var j = 0; j < dataCells.length; j++) {
-        row.push(dataCells[j].innerText);
+        var tdText = dataCells[j].innerText.split('\n');
+        var addedText = tdText[0] + "   ";
+        if (tdText[1]) {
+          addedText += '\n' + tdText[1];
+        }
+        row.push(addedText);
       }
       rows.push(row);
     }

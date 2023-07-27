@@ -38,12 +38,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $finishID      =    $data["finishInfo"]["userName"];
   $finishTime    =    $data["finishInfo"]["regTime"];
 
+  $sql_select = "SELECT * FROM final_data WHERE  userNm = '" . $currentUser . "' AND firstID = '" . $firstID . "' AND secondID = '" . $secondID . "'";
   $sql_insert = "INSERT INTO final_data(userNm, firstID, secondID, liveTime, liveBuild, startNm, startTime, finishNm, finishTime) VALUES ('$currentUser','$firstID', '$secondID', '$liveTime', '$liveBuild', '$startID', '$startTime', '$finishID', '$finishTime')";
+  $sql_update = "UPDATE final_data SET liveTime = '" . $liveTime . "', liveBuild = '" . $liveBuild . "', startNm = '" . $startID . "', startTime = '" . $startTime . "',finishNm = '" . $finishID . "', finishTime = '" . $finishTime . "'  WHERE  userNm = '" . $currentUser . "' AND firstID = '" . $firstID . "' AND secondID = '" . $secondID . "'";
 
-  if ($result = $db->query($sql_insert)) {
-    echo "Success";
+  if ($db->query($sql_select) && mysqli_num_rows($db->query($sql_select)) > 0) {
+    if ($result = $db->query($sql_update)) {
+      echo "Success";
+    } else {
+      echo "Failed!";
+    }
   } else {
-    echo "Failed!";
+    if ($result = $db->query($sql_insert)) {
+      echo "Success";
+    } else {
+      echo "Failed!";
+    }
   }
 } else {
   $sql_read = "SELECT * from final_data";
