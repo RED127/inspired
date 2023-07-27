@@ -307,6 +307,7 @@ require_once("assets.php");
 <script>
   // document.getElementById("date_picker").valueAsDate = new Date();
   $(document).ready(function() {
+
     $("#date_picker").datetimepicker({
       format: 'DD-MM-YYYY',
       icons: {
@@ -781,6 +782,10 @@ require_once("assets.php");
   }
 
   function activeRow(row, table) {
+    localStorage.setItem('active', JSON.stringify({
+      table: table,
+      row: row
+    }));
     removeActiveRow();
     // Select Row
     const selectedRow = 2 * row - 1;
@@ -914,6 +919,14 @@ require_once("assets.php");
       var result = JSON.parse(result);
       $('.night_table').html(result.night);
       $('.day_table').html(result.day);
+
+      // Active Row
+      if (result.day != 'No data found' && result.night != 'No data found') {
+        const activeArray = localStorage.getItem('active') ? JSON.parse(localStorage.getItem('active')) : {};
+        if (dayRowNum && nightRowNum && activeArray && activeArray.table) {
+          activeRow(activeArray.row, activeArray.table)
+        }
+      }
     });
   }
 
