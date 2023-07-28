@@ -538,6 +538,13 @@ require_once("assets.php");
         }
       }
 
+      function toNextCycle() {
+        $(".finish-box").removeClass('bg-green');
+        var cycle = $("#cycle_select").val();
+        $("#cycle_select").val(parseInt(cycle) + 1);
+        read_kanban_box();
+      }
+
       function playAudio(file) {
         // alert("playAudio");
         var audio = new Audio(file);
@@ -792,7 +799,7 @@ require_once("assets.php");
           setTimeout(function() {
             check_finish();
             if ($('#btn_finish').attr('href') == '###') {
-              toNext();
+              toNextCycle();
             }
           }, 1000)
         }

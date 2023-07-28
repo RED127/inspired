@@ -46,7 +46,7 @@ if (0 < $_FILES['file']['error']) {
         try {
             // load uploaded file
             $objPHPExcel = PHPExcel_IOFactory::load($file);
-            $sheet = $objPHPExcel->getSheet(2);
+            $sheet = $objPHPExcel->getSheet(0);
             $total_rows = $sheet->getHighestRow();
             $highestColumn      = $sheet->getHighestColumn();
             $highestColumnIndex = PHPExcel_Cell::columnIndexFromString($highestColumn);
@@ -59,8 +59,7 @@ if (0 < $_FILES['file']['error']) {
                 echo "Error deleting data: " . $db->error;
             }
 
-            // for ($row = 1; $row <= $total_rows; ++$row) {
-            for ($row = 692; $row <= 768; ++$row) {
+            for ($row = 2; $row <= $total_rows; ++$row) {
                 for ($col = 0; $col < $highestColumnIndex; ++$col) {
                     $cell = $sheet->getCellByColumnAndRow($col, $row);
                     $val = $cell->getValue();
@@ -70,18 +69,19 @@ if (0 < $_FILES['file']['error']) {
 
             foreach ($records as $index => $row) {
                 if ($index > 0) {
-                    $Container = $row[5];
-                    var_dump($Container);
-                    $Module = $row[6];
-                    $Qty_Boxes = $row[8];
-                    $Stocking_Date = $row[11];
-                    $shift = $row[12];
-                    $query = "INSERT INTO excel_pick_import(Container, Module, Qty_Boxes, Stocking_Date, shift) VALUES ('" . $Container . "','" . $Module . "','" . $Qty_Boxes . "','" . $Stocking_Date . "','" . $shift . "')";
+                    if ($row[5] && $row[6] && $row[8] && $row[11] && $row[12]) {
+                        $Container = $row[5];
+                        var_dump($Container);
+                        $Module = $row[6];
+                        $Qty_Boxes = $row[8];
+                        $Stocking_Date = $row[11];
+                        $shift = $row[12];
+                        $query = "INSERT INTO excel_pick_import(Container, Module, Qty_Boxes, Stocking_Date, shift) VALUES ('" . $Container . "','" . $Module . "','" . $Qty_Boxes . "','" . $Stocking_Date . "','" . $shift . "')";
+                        echo $query;
 
-                    echo $query;
-
-                    if ($db->query($query) === FALSE) {
-                        echo "Error: " . $query . "<br>";
+                        if ($db->query($query) === FALSE) {
+                            echo "Error: " . $query . "<br>";
+                        }
                     }
                 }
             }
