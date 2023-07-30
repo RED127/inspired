@@ -437,16 +437,19 @@ require_once("assets.php");
               });
             }
           }
-          let data = {
-            firstID: rowID1,
-            secondID: rowID2,
-            currentUser: curretUser,
-            liveTime: liveTime,
-            liveBuild: liveBuild,
-            startInfo: startInfo,
-            finishInfo: finishInfo
-          };
-          finalData(data);
+
+          if (rowID1 && rowID2) {
+            let data = {
+              firstID: rowID1,
+              secondID: rowID2,
+              currentUser: curretUser,
+              liveTime: liveTime,
+              liveBuild: liveBuild,
+              startInfo: startInfo,
+              finishInfo: finishInfo
+            };
+            finalData(data);
+          }
 
           $("#cont_mod").val("");
 
@@ -544,16 +547,18 @@ require_once("assets.php");
               });
             }
           }
-          let data = {
-            firstID: rowID1,
-            secondID: rowID2,
-            currentUser: curretUser,
-            liveTime: liveTime,
-            liveBuild: liveBuild,
-            startInfo: startInfo,
-            finishInfo: finishInfo
-          };
-          finalData(data);
+          if (rowID1 && rowID2) {
+            let data = {
+              firstID: rowID1,
+              secondID: rowID2,
+              currentUser: curretUser,
+              liveTime: liveTime,
+              liveBuild: liveBuild,
+              startInfo: startInfo,
+              finishInfo: finishInfo
+            };
+            finalData(data);
+          }
 
           $("#cont_mod").val("");
         }
@@ -762,18 +767,19 @@ require_once("assets.php");
         regTime: $(selID).prev().text(),
       }
     }
-
-    let data = {
-      firstID: rowID1,
-      secondID: rowID2,
-      currentUser: curretUser,
-      liveTime: liveTime,
-      liveBuild: liveBuild,
-      startInfo: startInfo,
-      finishInfo: finishInfo
+    if (rowID1 && rowID2) {
+      let data = {
+        firstID: rowID1,
+        secondID: rowID2,
+        currentUser: curretUser,
+        liveTime: liveTime,
+        liveBuild: liveBuild,
+        startInfo: startInfo,
+        finishInfo: finishInfo
+      }
+      finalData(data);
     }
 
-    finalData(data);
   }
 
   function activeStartBox(id) {
