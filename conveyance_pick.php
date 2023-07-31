@@ -825,7 +825,6 @@ require_once("assets.php");
           var before_cycle = false;
           while (check_cycle > 0) {
             const res = await check_finish_item(check_cycle, zone);
-            console.log("res---->", check_cycle, "=====", res);
             if (res) {
               check_cycle--;
             } else {
@@ -837,15 +836,12 @@ require_once("assets.php");
               check_cycle = 0;
             };
           }
-          console.log("before====>", before_cycle);
 
           if (!before_cycle) {
             var all_cycles = $("#cycle_select option").length;
             var i = cycle;
-            console.log("next===>", i, "====", all_cycles);
             while (i < all_cycles) {
               const res = await check_finish_item(i, zone);
-              console.log("next====>", res, "====", i);
               if (res) {
                 i++;
               } else {
