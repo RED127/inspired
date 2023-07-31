@@ -4525,7 +4525,7 @@ function read_excel($post_data)
                 $dayData = $dayData . "<tr id='dayRow_" . $tmpArr[$i * 2]['id'] . "' greenFlag='0' dayrowid = '" . ($i * 2) . "'>
             <td id='dayConID_" . $tmpArr[$i * 2]['id'] . "'>" . $tmpArr[$i * 2]["Container"] . "</td>
             <td id='dayModID_" . $tmpArr[$i * 2]['id'] . "'>" . $tmpArr[$i * 2]["Module"] . "</td>
-            <td rowspan='2' id='day_counter_" . ($i + 1) . "' style='padding:unset;'></td><td rowspan='2' id='dayLive_" . $tmpArr[$i]['id'] . "' opt='dayLive'></td>
+            <td id='day_counter_" . $tmpArr[$i * 2]['id'] . "' style='padding:unset;'></td><td rowspan='2' id='dayLive_" . $tmpArr[$i]['id'] . "' opt='dayLive'></td>
             <td rowspan='2'  id='dayLoad_" . $tmpArr[$i]['id'] . "' style='padding:2px;'></td>
             <td rowspan='2' name='dayStWork'>
             <div id='dayStUser_" . ($i + 1) . "' id='startUser'></div>
@@ -4549,7 +4549,8 @@ function read_excel($post_data)
                 $dayData = $dayData . "<script> modArr_day.push('" . $tmpArr[$i * 2 + 1]['Module'] . "') </script>";
                 $dayData = $dayData . "<tr id='dayRow_" . $tmpArr[$i * 2 + 1]['id'] . "' greenFlag='0'  dayrowid = '" . ($i * 2 + 1) . "'>
             <td id='dayConID_" . $tmpArr[$i * 2 + 1]['id'] . "'>" . $tmpArr[$i * 2 + 1]["Container"] . "</td>
-            <td id='dayModID_" . $tmpArr[$i * 2 + 1]['id'] . "'>" . $tmpArr[$i * 2 + 1]["Module"] . "</td></tr>";
+            <td id='dayModID_" . $tmpArr[$i * 2 + 1]['id'] . "'>" . $tmpArr[$i * 2 + 1]["Module"] . "</td>
+            <td id='day_counter_" . $tmpArr[$i * 2 + 1]['id'] . "' style='padding:unset;'></td></tr>";
             }
         }
         $dayData = $dayData . "</table>";
@@ -4577,7 +4578,7 @@ function read_excel($post_data)
                 $nightData = $nightData . "<tr id='nightRow_" . $tmpArr[$i * 2]['id'] . "' greenFlag='0'  nightrowid = '" . ($i * 2) . "'>
             <td id='nightConID_" . $tmpArr[$i * 2]['id'] . "'>" . $tmpArr[$i * 2]["Container"] . "</td>
             <td id='nightModID_" . $tmpArr[$i * 2]['id'] . "'>" . $tmpArr[$i * 2]["Module"] . "</td>
-            <td rowspan='2' id='night_counter_" . ($i + 1) . "' style='padding:unset;'></td><td rowspan='2' id='nightLive_" . $tmpArr[$i]['id'] . "' opt='nightLive'></td>
+            <td id='night_counter_" . $tmpArr[$i * 2]['id'] . "' style='padding:unset;'></td><td rowspan='2' id='nightLive_" . $tmpArr[$i]['id'] . "' opt='nightLive'></td>
             <td rowspan='2' id='nightLoad_" . $tmpArr[$i]['id'] . "' style='padding:2px;'></td>
             <td rowspan='2' name='nightStWork'>
                 <div id='nightStUser_" . ($i + 1) . "' name='nightStUser'></div>
@@ -4601,7 +4602,8 @@ function read_excel($post_data)
                 $nightData = $nightData . "<script> modArr_night.push('" . $tmpArr[$i * 2 + 1]['Module'] . "') </script>";
                 $nightData = $nightData . "<tr id='nightRow_" . $tmpArr[$i * 2 + 1]['id'] . "' greenFlag='0' nightrowid='" . ($i * 2 + 1) . "'>
             <td id='nightConID_" . $tmpArr[$i * 2 + 1]['id'] . "'>" . $tmpArr[$i * 2 + 1]["Container"] . "</td>
-            <td id='nightModID_" . $tmpArr[$i * 2 + 1]['id'] . "'>" . $tmpArr[$i * 2 + 1]["Module"] . "</td></tr>";
+            <td id='nightModID_" . $tmpArr[$i * 2 + 1]['id'] . "'>" . $tmpArr[$i * 2 + 1]["Module"] . "</td>
+            <td id='night_counter_" . $tmpArr[$i * 2 + 1]['id'] . "' style='padding:unset;'></td></tr>";
             }
         }
         $nightData = $nightData . "</table>";

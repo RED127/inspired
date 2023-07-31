@@ -820,20 +820,20 @@ require_once("assets.php");
 
           var cycle = $("#cycle_select").val() ? $("#cycle_select").val() : -1;
           var zone = $("#zone_select").val() != 0 ? $("#zone_select").val() : -1;
-          console.log(cycle, "=====", zone);
           var check_cycle = cycle - 1;
           var before_cycle = false;
-          while (check_cycle > 0) {
-            const res = await check_finish_item(check_cycle, zone);
+          var j = 1;
+          while (j < check_cycle) {
+            const res = await check_finish_item(j, zone);
             if (res) {
-              check_cycle--;
+              j++;
             } else {
               $(".finish-box").removeClass('bg-green');
               before_cycle = true;
-              $("#cycle_select").val(check_cycle);
+              $("#cycle_select").val(j);
               read_kanban_box();
 
-              check_cycle = 0;
+              j = check_cycle;
             };
           }
 

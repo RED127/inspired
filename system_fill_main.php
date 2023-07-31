@@ -115,6 +115,10 @@ require_once("assets.php");
     padding: 10px 10px;
   }
 
+  td p {
+    margin: 0;
+  }
+
   .left_side {
     display: block;
     width: 47%;
@@ -224,7 +228,16 @@ require_once("assets.php");
                     <?php
                     if ($latest_updated === NULL) {
                       echo "No data";
-                    } else echo $latest_updated["Update_time"];
+                    } else {
+
+                      if ($latest_updated["Update_time"]) {
+                        $dateTime = explode(" ", $latest_updated["Update_time"]);
+                        $dateObj = explode("-", $dateTime[0]);
+                        echo  $dateObj[2] . "-" . $dateObj[1] . "-" . $dateObj[0] . " " . $dateTime[1];
+                      } else {
+                        echo date("d-m-Y");
+                      }
+                    }
                     ?>
                   </div>
                 </div>
@@ -318,12 +331,12 @@ require_once("assets.php");
   })
   $("#day_build_amount").keydown(function(e) {
     if (e.keyCode === 13) {
-      let segVal_Day = ($("#day_build_amount").val() / Math.ceil(dayRowNum / 2)).toFixed(2);
-      for (let i = 1; i <= Math.ceil(dayRowNum / 2); i++) {
-        if (i == Math.ceil(dayRowNum / 2)) {
-          $("#day_counter_" + i).text($("#day_build_amount").val());
-        } else {
-          $("#day_counter_" + i).text(Math.ceil(segVal_Day * i));
+      let segVal_Day = ($("#day_build_amount").val() / dayRowNum).toFixed(2);
+      for (let i = 0; i < dayRowNum; i++) {
+        if ($('tr[dayrowid=' + i + ']').attr('id')) {
+          let id = $('tr[dayrowid=' + i + ']').attr('id').split('_')[1];
+          $("#day_counter_" + id).text(Math.ceil(segVal_Day * i));
+          saveData(id, 'all', 'day');
         }
       }
     }
@@ -331,12 +344,12 @@ require_once("assets.php");
 
   $("#night_build_amount").keydown(function(e) {
     if (e.keyCode === 13) {
-      let segVal_Night = ($("#night_build_amount").val() / Math.ceil(nightRowNum / 2)).toFixed(2);
-      for (let j = 1; j <= Math.ceil(nightRowNum / 2); j++) {
-        if (j == Math.ceil(nightRowNum / 2)) {
-          $("#night_counter_" + j).text($("#night_build_amount").val());
-        } else {
-          $("#night_counter_" + j).text(Math.ceil(segVal_Night * j));
+      let segVal_Night = ($("#night_build_amount").val() / nightRowNum).toFixed(2);
+      for (let j = 0; j < nightRowNum; j++) {
+        if ($('tr[nightrowid=' + j + ']').attr('id')) {
+          let id = $('tr[nightrowid=' + j + ']').attr('id').split('_')[1];
+          $("#night_counter_" + id).text(Math.ceil(segVal_Night * j));
+          saveData(id, 'all', 'night');
         }
       }
     }
@@ -361,13 +374,14 @@ require_once("assets.php");
           let loadVal = parseInt($($(selRow).children()[4]).attr("load"));
           let tmpDayRowID = $(selRow).attr("dayrowid");
           let tmpTxt = "<span style='color:#063c49; font-weight:700;'><?php echo $_SESSION['user']['username'] ?></span>";
-          let newTime = "<p style='margin:unset;'>" + new Date().getHours() + ":" + new Date().getMinutes() + "</p>";
+          let newTime = "<p>" + new Date().getHours() + ":" + new Date().getMinutes() + "</p>";
 
           // Save Data
           var rowID1 = $("tr[dayrowid='" + i + "']").attr("id");
           var rowID2 = $('#' + rowID1).next().next().next().attr("id");
           var curretUser = '<?php echo $_SESSION['user']['username'] ?>';
-          var liveTime = new Date().getHours() + ":" + new Date().getMinutes();
+          var count = $("tr[dayrowid='" + i + "']").children(':nth-child(3)').text();
+          var liveTime = newTime;
           var liveBuild = liveVal;
           var startInfo = {}
           var finishInfo = {}
@@ -438,16 +452,18 @@ require_once("assets.php");
             }
           }
 
-          if (rowID1 && rowID2) {
+          if (rowID1) {
             let data = {
               firstID: rowID1,
               secondID: rowID2,
               currentUser: curretUser,
+              count: count,
               liveTime: liveTime,
               liveBuild: liveBuild,
               startInfo: startInfo,
               finishInfo: finishInfo
             };
+            console.log(data);
             finalData(data);
           }
 
@@ -467,14 +483,15 @@ require_once("assets.php");
           let selRow = $($("#nightShiftTB tr")[i + 1]);
           let loadVal = parseInt($($(selRow).children()[4]).attr("load"));
           let tmpDayRowID = $(selRow).attr("nightrowid");
-          let tmpTxt = "<span style='color:#063c49; font-weight:700;'><?php echo $_SESSION['user']['username'] ?></span><br/>";
-          let newTime = "<p style='margin:unset;'>" + new Date().getHours() + ":" + new Date().getMinutes() + "</p>";
+          let tmpTxt = "<span style='color:#063c49; font-weight:700;'><?php echo $_SESSION['user']['username'] ?></span>";
+          let newTime = "<p>" + new Date().getHours() + ":" + new Date().getMinutes() + "</p>";
 
           // Save Data
           var rowID1 = $("tr[nightrowid='" + i + "']").attr("id");
           var rowID2 = $('#' + rowID1).next().next().next().attr("id");
           var curretUser = '<?php echo $_SESSION['user']['username'] ?>';
-          var liveTime = new Date().getHours() + ":" + new Date().getMinutes();
+          var count = $("tr[nightrowid='" + i + "']").children(':nth-child(3)').text();
+          var liveTime = newTime;
           var liveBuild = liveVal;
           var startInfo = {}
           var finishInfo = {}
@@ -547,11 +564,12 @@ require_once("assets.php");
               });
             }
           }
-          if (rowID1 && rowID2) {
+          if (rowID1) {
             let data = {
               firstID: rowID1,
               secondID: rowID2,
               currentUser: curretUser,
+              count: count,
               liveTime: liveTime,
               liveBuild: liveBuild,
               startInfo: startInfo,
@@ -563,6 +581,7 @@ require_once("assets.php");
           $("#cont_mod").val("");
         }
       }
+      finalData();
     }
   })
 
@@ -647,13 +666,14 @@ require_once("assets.php");
             JSON.parse(data).forEach(function(item) {
               $("#" + item.firstID).children(":first").css("background", "green");
               $("#" + item.firstID).children(":nth-child(2)").css("background", "green");
+              $("#" + item.firstID).children(":nth-child(3)").html(item.count);
               // $("#" + item.secondID).children(":first").css("background", "green");
               // $("#" + item.secondID).children(":nth-child(2)").css("background", "green");
 
-              $("#" + item.firstID).children(":nth-child(4)").text(item.liveBuild);
+              $("#" + item.firstID).children(":nth-child(4)").html(item.liveBuild);
 
-              let tmpTxt = "<span style='color:#063c49; font-weight:700;'>" + item.userNm + "</span><br/>";
-              $("#" + item.firstID).children(":nth-child(5)").append(tmpTxt, item.liveTime);
+              let tmpTxt = "<span style='color:#063c49; font-weight:700;'>" + item.userNm + "</span>";
+              $("#" + item.firstID).children(":nth-child(5)").html(tmpTxt + "<br/><p>" + item.liveTime + "</p>");
 
               if (tmpTxt && item.liveTime) {
                 $("#" + item.firstID).children(":nth-child(5)").css("background", "green");
@@ -663,13 +683,13 @@ require_once("assets.php");
                 $("#" + item.firstID).children(":nth-child(6)").css("background", "green");
               }
 
-              $("#" + item.firstID).children(":nth-child(6)").children("div:first").append(item.startNm);
-              $("#" + item.firstID).children(":nth-child(6)").children("div:nth-child(2)").append(item.startTime);
+              $("#" + item.firstID).children(":nth-child(6)").children("div:first").html(item.startNm);
+              $("#" + item.firstID).children(":nth-child(6)").children("div:nth-child(2)").html(item.startTime);
 
-              $("#" + item.firstID).children(":last-child").children("div:first").append(item.finishNm);
-              $("#" + item.firstID).children(":last-child").children("div:nth-child(2)").append(item.finishTime);
+              $("#" + item.firstID).children(":last-child").children("div:first").html(item.finishNm);
+              $("#" + item.firstID).children(":last-child").children("div:nth-child(2)").html(item.finishTime);
 
-              if (search(JSON.parse(data), item.secondID)) {
+              if (search(JSON.parse(data), item.secondID) || item.secondID == '') {
                 var rowid = 0;
                 if (item.firstID.includes('day')) {
                   rowid = $("#" + item.firstID).attr('dayrowid');
@@ -694,7 +714,6 @@ require_once("assets.php");
                   $("#" + item.firstID).children(":nth-child(6)").children(":last").val(item.startNm);
                   $("#" + item.firstID).children(":last-child").children(":last").val(item.finishNm);
                 }
-
 
                 $("#" + item.firstID).children(":nth-child(6)").children("select").prop("disabled", false);
                 $("#" + item.firstID).children(":last-child").children("select").prop("disabled", false);
@@ -722,7 +741,7 @@ require_once("assets.php");
   // 2023-7-20
 
   function saveData(row, col, state) {
-    var rowID1, rowID2, curretUser, liveTime, liveBuild;
+    var rowID1, rowID2, curretUser, count, liveTime, liveBuild;
     var startInfo = {};
     var finishInfo = {};
 
@@ -736,6 +755,7 @@ require_once("assets.php");
       rowID1 = $(selID).parent().parent().attr("id");
       rowID2 = $('#' + rowID1).next().next().next().attr("id");
       curretUser = '<?php echo $_SESSION['user']['username'] ?>';
+      count = $(selID).parent().parent().children(':nth-child(3)').text();
       liveTime = $(selID).parent().prev().prev().children("p").text();
       liveBuild = $(selID).parent().prev().prev().text();
       startInfo = {
@@ -746,7 +766,7 @@ require_once("assets.php");
         userName: $(selID).parent().next().children(":first").text(),
         regTime: $(selID).parent().next().children(":nth-child(2)").text()
       }
-    } else {
+    } else if (col == 'finish') {
       var selID;
       if (state == 'day') {
         selID = '#dayFnSel_' + row;
@@ -755,6 +775,7 @@ require_once("assets.php");
       }
       rowID1 = $(selID).parent().parent().attr("id");
       rowID2 = $('#' + rowID1).next().next().next().attr("id");
+      count = $(selID).parent().parent().children(':nth-child(3)').text();
       curretUser = '<?php echo $_SESSION['user']['username'] ?>';
       liveTime = $(selID).parent().prev().prev().children("p").text();
       liveBuild = $(selID).parent().prev().prev().prev().text();
@@ -766,12 +787,42 @@ require_once("assets.php");
         userName: $(selID).prev().prev().text(),
         regTime: $(selID).prev().text(),
       }
+    } else {
+      var selID = state == "day" ? "#dayRow_" + row : "#nightRow_" + row;
+      rowID1 = $(selID).attr("id");
+      rowID2 = $('#' + rowID1).next().next().next().attr("id");
+      curretUser = '<?php echo $_SESSION['user']['username'] ?>';
+      count = $(selID).children(':nth-child(3)').text();
+      if ($(selID).attr(state == "day" ? "dayrowid" : "nightrowid") % 2 == 0) {
+        liveTime = $(selID).children(':nth-child(5)').children('p').text();
+        liveBuild = $(selID).children(':nth-child(4)').text();
+        startInfo = {
+          userName: $(selID).children(':nth-child(6)').children(":first").text(),
+          regTime: $(selID).children(':nth-child(6)').children(":nth-child(2)").text()
+        }
+        finishInfo = {
+          userName: $(selID).children(':nth-child(7)').children(":first").text(),
+          regTime: $(selID).children(':nth-child(7)').children(":nth-child(2)").text()
+        }
+      } else {
+        liveTime = "";
+        liveBuild = "";
+        startInfo = {
+          userName: '',
+          regTime: ''
+        };
+        finishInfo = {
+          userName: '',
+          regTime: ''
+        };
+      }
     }
-    if (rowID1 && rowID2) {
+    if (rowID1) {
       let data = {
         firstID: rowID1,
-        secondID: rowID2,
+        secondID: rowID2 ? rowID2 : "",
         currentUser: curretUser,
+        count: count,
         liveTime: liveTime,
         liveBuild: liveBuild,
         startInfo: startInfo,
@@ -840,15 +891,15 @@ require_once("assets.php");
             dayLastID = i + 2;
         }
         if (Number(dayLastID))
-          $('tr[dayrowid="' + dayLastID + '"]').children(':nth-child(4)').text(liveVal);
+          $('tr[dayrowid="' + dayLastID + '"]').children(':nth-child(4)').html(liveVal);
         var nightLastID = '';
         for (let i = 0; i < ($('#nightShiftTB tr').length - 1); i++) {
           if (i % 2 == 0 && $('tr[nightrowid="' + i + '"]').children(':first').css('background-color') == 'rgb(0, 128, 0)' && $('tr[nightrowid="' + i + '"]').children(':nth-child(4)').text() && !$('tr[nightrowid="' + (i + 2) + '"]').children(':nth-child(4)').text())
             nightLastID = i + 2;
         }
         if (Number(nightLastID))
-          $('tr[nightrowid="' + nightLastID + '"]').children(':nth-child(4)').text(liveVal);
-        $("td[status='updated']").text(JSON.parse(data)[0]);
+          $('tr[nightrowid="' + nightLastID + '"]').children(':nth-child(4)').html(liveVal);
+        $("td[status='updated']").html(JSON.parse(data)[0]);
       }
     })
   }
