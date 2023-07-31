@@ -594,6 +594,27 @@ require_once("assets.php");
         });
       }
 
+      async function check_finish_item(cycle, zone) {
+        var pick_date = $("#pick_date").val();
+        var status = $("#status").val();
+        const res = await $.ajax({
+          url: "actions.php",
+          method: "post",
+          data: {
+            action: 'check_pick_finish',
+            pick_date: pick_date,
+            status: status,
+            cycle: cycle,
+            zone: zone
+          },
+        });
+        if (res.includes('success')) {
+          return true;
+        } else {
+          return false;
+        }
+      }
+
       $('#pick_date').on('dp.change', function(e) {
         $("#cycle_span").css("display", "none")
         $("#cycle_select").empty()
@@ -654,7 +675,7 @@ require_once("assets.php");
         //$("#kanban_input").val($("#current_kanban").text())
       });
 
-      $(document).on('keypress', "#kanban_input", function(e) {
+      $(document).on('keypress', "#kanban_input", async function(e) {
         if (e.keyCode == 13) {
           var value = $(this).val().toUpperCase();
           $("#kanban_id").val(0);
@@ -796,12 +817,46 @@ require_once("assets.php");
             }
           }
           // check finish
-          setTimeout(function() {
-            check_finish();
-            if ($('#btn_finish').attr('href') == '###') {
-              toNextCycle();
+
+          var cycle = $("#cycle_select").val() ? $("#cycle_select").val() : -1;
+          var zone = $("#zone_select").val() != 0 ? $("#zone_select").val() : -1;
+          console.log(cycle, "=====", zone);
+          var check_cycle = cycle - 1;
+          var before_cycle = false;
+          while (check_cycle > 0) {
+            const res = await check_finish_item(check_cycle, zone);
+            console.log("res---->", check_cycle, "=====", res);
+            if (res) {
+              check_cycle--;
+            } else {
+              $(".finish-box").removeClass('bg-green');
+              before_cycle = true;
+              $("#cycle_select").val(check_cycle);
+              read_kanban_box();
+
+              check_cycle = 0;
+            };
+          }
+          console.log("before====>", before_cycle);
+
+          if (!before_cycle) {
+            var all_cycles = $("#cycle_select option").length;
+            var i = cycle;
+            console.log("next===>", i, "====", all_cycles);
+            while (i < all_cycles) {
+              const res = await check_finish_item(i, zone);
+              console.log("next====>", res, "====", i);
+              if (res) {
+                i++;
+              } else {
+                $(".finish-box").removeClass('bg-green');
+                $("#cycle_select").val(i);
+                read_kanban_box();
+
+                i = all_cycles;
+              };
             }
-          }, 1000)
+          }
         }
       });
 
