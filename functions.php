@@ -4517,7 +4517,7 @@ function read_excel($post_data)
         while ($rowNum = $dayResult->fetch_assoc()) {
             array_push($tmpArr, $rowNum);
         }
-        $dayData = $dayData . "<script>let dayRowNum = " . count($tmpArr) . "</script>";    //get row number
+        $dayData = $dayData . "<script>var dayRowNum = " . count($tmpArr) . "</script>";    //get row number
         for ($i = 0; $i < round(count($tmpArr) / 2); $i++) {
             if ($i < count($tmpArr) / 2) {
                 $dayData = $dayData . "<script> contArr_day.push('" . $tmpArr[$i * 2]['Container'] . "') </script>";
@@ -4569,7 +4569,7 @@ function read_excel($post_data)
         while ($rowNum = $nightResult->fetch_assoc()) {
             array_push($tmpArr, $rowNum);
         }
-        $nightData = $nightData . "<script>let nightRowNum = " . count($tmpArr) . "</script>";    //get row number
+        $nightData = $nightData . "<script>var nightRowNum = " . count($tmpArr) . "</script>";    //get row number
         for ($i = 0; $i <= floor(count($tmpArr) / 2); $i++) {
             if ($i < count($tmpArr) / 2) {
                 $nightData = $nightData . "<script> contArr_night.push('" . $tmpArr[$i * 2]['Container'] . "') </script>";
