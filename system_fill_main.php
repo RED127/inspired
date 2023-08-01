@@ -463,7 +463,6 @@ require_once("assets.php");
               startInfo: startInfo,
               finishInfo: finishInfo
             };
-            console.log(data);
             finalData(data);
           }
 
@@ -664,8 +663,10 @@ require_once("assets.php");
           if (data.length > 0) {
             var len = 0;
             JSON.parse(data).forEach(function(item) {
-              $("#" + item.firstID).children(":first").css("background", "green");
-              $("#" + item.firstID).children(":nth-child(2)").css("background", "green");
+              if(item.liveTime){
+                $("#" + item.firstID).children(":first").css("background", "green");
+                $("#" + item.firstID).children(":nth-child(2)").css("background", "green");
+              }
               $("#" + item.firstID).children(":nth-child(3)").html(item.count);
               // $("#" + item.secondID).children(":first").css("background", "green");
               // $("#" + item.secondID).children(":nth-child(2)").css("background", "green");
@@ -805,7 +806,7 @@ require_once("assets.php");
           regTime: $(selID).children(':nth-child(7)').children(":nth-child(2)").text()
         }
       } else {
-        liveTime = "";
+        liveTime = $(selID).prev().prev().prev().children(':nth-child(5)').children('p').text();
         liveBuild = "";
         startInfo = {
           userName: '',
