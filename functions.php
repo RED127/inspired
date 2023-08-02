@@ -985,6 +985,63 @@ function read_history($post_data)
     echo '</table>';
 }
 
+function read_kanban_list()
+{
+    global $db;
+
+    $query = "SELECT a.*, b.* FROM `excel_pick_list` AS a LEFT JOIN `part_to_kanban` AS b ON a.`Kanban` = b.`kanban` WHERE a.`Part_number` = b.`part_number`";
+    $result = $db->query($query);
+    echo '<table id="kanban_table" class="table table-bordered table-striped dataTable dtr-inline">';
+    echo '<thead>';
+    echo '<th>Kanban</th>';
+    echo '<th>Stock</th>';
+    echo '<th>Part number</th>';
+    echo '<th>Max</th>';
+    echo '<th>Min</th>';
+    echo '</thead>';
+    echo '<tbody>';
+    while ($row = mysqli_fetch_object($result)) {
+        echo '<tr>';
+        echo '<td>' . $row->Kanban . '</td>';
+        echo '<td>' . $row->No_box . '</td>';
+        echo '<td>' . $row->Part_number . '</td>';
+        echo '<td>' . $row->max . '</td>';
+        echo '<td>' . $row->min . '</td>';
+        echo '</tr>';
+    }
+    echo '</tbody>';
+    echo '</table>';
+}
+
+function read_stock_level()
+{
+    global $db;
+
+    $query = "select a.*, b.* from `excel_pick_list` as a left join `part_to_kanban` as b on a.`Kanban` = b.`kanban` WHERE a.`No_box` < b.`min` or a.`No_box` > b.`max`";
+    $result = $db->query($query);
+    $minContent = "";
+    $maxContent = "";
+    while ($row = mysqli_fetch_object($result)) {
+        if ($row->No_box < $row->min) {
+            $minContent = $minContent . "<div class='low-item'>
+                                    <h2>{$row->Kanban}</h2>
+                                    <h2>{$row->No_box}/{$row->min}</h2>
+                                </div>";
+        } else if ($row->No_box > $row->max) {
+            $maxContent = $maxContent . "<div class='low-item'>
+                                    <h2>{$row->Kanban}</h2>
+                                    <h2>{$row->No_box}/{$row->max}</h2>
+                                </div>";
+        }
+    }
+    $arr = array(
+        'min' => strlen($minContent) > 0 ? $minContent : "No data",
+        'max' => strlen($maxContent) > 0 ? $maxContent : "No data"
+    );
+    echo json_encode($arr);
+}
+
+
 
 /*
  * Container Devan
@@ -3735,9 +3792,11 @@ function save_part2kanban($post_data)
     $delivery_address2 = $post_data['delivery_address2'];
     $part_number = $post_data['part_number'];
     $pick_seq = $post_data['pick_seq'];
+    $min = $post_data['min'];
+    $max = $post_data['max'];
     if ($item_id == 0) {
-        $query = "INSERT INTO {$tblPart2Kanban}  (`kanban`, `part_number`, `dolly`, `barcode`, `pick_address`, `delivery_address`, `delivery_address2`, `pick_seq`)
-                    value ('{$kanban}', '{$part_number}', '{$dolly}', '{$barcode}', '{$pick_address}', '{$delivery_address}', '{$delivery_address2}', '{$pick_seq}')";
+        $query = "INSERT INTO {$tblPart2Kanban}  (`kanban`, `part_number`, `dolly`, `barcode`, `pick_address`, `delivery_address`, `delivery_address2`, `pick_seq`,`min`,`max`)
+                    value ('{$kanban}', '{$part_number}', '{$dolly}', '{$barcode}', '{$pick_address}', '{$delivery_address}', '{$delivery_address2}', '{$pick_seq}', '{$min}', '{$max}')";
         $db->query($query);
         $insert_id = $db->insert_id;
         echo '<tr id="tr_p2k_' . $insert_id . '">';
@@ -3763,6 +3822,12 @@ function save_part2kanban($post_data)
         echo '<td>';
         echo '<input type="text" class="form-control pick_seq" name="pick_seq" value="' . $pick_seq . '">';
         echo '</td>';
+        echo '<td>';
+        echo '<input type="text" class="form-control min" name="min" value="' . $min . '">';
+        echo '</td>';
+        echo '<td>';
+        echo '<input type="text" class="form-control max" name="max" value="' . $max . '">';
+        echo '</td>';
         echo '<td style="text-align: center;">';
         echo '<button type="button" style="margin-bottom:5px" id="part2KanbanSave" class="btn btn-primary btn-sm save-part2kanban" value="' . $insert_id . '">Save</button>';
         echo '<button type="button" id="part2KanbanDelete" class="btn btn-danger btn-sm delete-part2kanban" value="' . $insert_id . '">Delete</button>';
@@ -3770,7 +3835,7 @@ function save_part2kanban($post_data)
         echo '</tr>';
     } else {
         var_dump((int)$item_id);
-        $query = "UPDATE {$tblPart2Kanban} SET `kanban` = '{$kanban}', `part_number` = '{$part_number}', `dolly` = '{$dolly}', `barcode` = '{$barcode}', `pick_address` = '{$pick_address}', `delivery_address` = '{$delivery_address}', `delivery_address2` = '{$delivery_address2}', `pick_seq` = '{$pick_seq}' WHERE `id` = '{$item_id}'";
+        $query = "UPDATE {$tblPart2Kanban} SET `kanban` = '{$kanban}', `part_number` = '{$part_number}', `dolly` = '{$dolly}', `barcode` = '{$barcode}', `pick_address` = '{$pick_address}', `delivery_address` = '{$delivery_address}', `delivery_address2` = '{$delivery_address2}', `pick_seq` = '{$pick_seq}', `min` = '{$min}', `max` = {$max} WHERE `id` = '{$item_id}'";
         $result = $db->query($query);
         if ($result)
             echo 'Ok';
@@ -3828,6 +3893,12 @@ function read_part2kanban()
         echo '</td>';
         echo '<td>';
         echo '<input type="text" class="form-control pick_seq" name="pick_seq" value="' . $item->pick_seq . '">';
+        echo '</td>';
+        echo '<td>';
+        echo '<input type="text" class="form-control min" name="min" value="' . $item->min . '">';
+        echo '</td>';
+        echo '<td>';
+        echo '<input type="text" class="form-control max" name="max" value="' . $item->max . '">';
         echo '</td>';
         echo '<td style="text-align: center;">';
         echo '<button type="button" style="margin-bottom:5px" id="part2KanbanSave" class="btn btn-primary btn-sm save-part2kanban" value="' . $item->id . '">Save</button>';

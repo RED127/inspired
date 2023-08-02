@@ -4,7 +4,9 @@ require_once 'PHPExcel/PHPExcel/IOFactory.php';
 require_once("config.php");
 require_once("functions.php");
 
-global $db;
+global $db, $DB_NAME;
+
+// Import Devan
 
 // SQL statement to create table
 $sql = "CREATE TABLE excel_pick_import (
@@ -17,7 +19,7 @@ $sql = "CREATE TABLE excel_pick_import (
 )";
 
 //checking if excel_pick_import table exists in database
-if ($result = $db->query("SHOW TABLE STATUS FROM spsonlin_pro LIKE 'excel_pick_import'")) {
+if ($result = $db->query("SHOW TABLE STATUS FROM " . $DB_NAME . " LIKE 'excel_pick_import'")) {
     $result = (array)$result;
     if ($result["lengths"] !== NULL) {
         echo "Table excel_pick_import already exists" . "<br/>";
@@ -27,12 +29,31 @@ if ($result = $db->query("SHOW TABLE STATUS FROM spsonlin_pro LIKE 'excel_pick_i
     }
 }
 
-// Execute SQL statement
-// if (mysqli_query($conn, $sql)) {
-//     echo "Table excel_pick_import created successfully";
-// } else {
-//     echo "Error creating table: " . mysqli_error($conn);
-// }
+// Create Table Import Pick
+
+// SQL statement to create table
+$sql_list = "CREATE TABLE excel_pick_list (
+    id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    Container VARCHAR(30) NOT NULL,
+    Module VARCHAR(30) NOT NULL,
+    Part_number VARCHAR(20) NOT NULL,
+    Kanban VARCHAR(10) NOT NULL,
+    No_box INT(10) UNSIGNED,
+    is_complete BOOLEAN
+)";
+
+//checking if excel_pick_import table exists in database
+if ($result = $db->query("SHOW TABLE STATUS FROM " . $DB_NAME . " LIKE 'excel_pick_list'")) {
+    $result = (array)$result;
+    if ($result["lengths"] !== NULL) {
+        echo "Table excel_pick_list already exists" . "<br/>";
+    } else {
+        $db->query($sql_list);
+        echo "Table excel_pick_list created successfully" . "<br/>";
+    }
+}
+
+// ==============================================================
 
 if (0 < $_FILES['file']['error']) {
     echo 'Error: ' . $_FILES['file']['error'] . '<br>';
@@ -46,7 +67,7 @@ if (0 < $_FILES['file']['error']) {
         try {
             // load uploaded file
             $objPHPExcel = PHPExcel_IOFactory::load($file);
-            $sheet = $objPHPExcel->getSheet(0);
+            $sheet = $objPHPExcel->getSheet(2);
             $total_rows = $sheet->getHighestRow();
             $highestColumn      = $sheet->getHighestColumn();
             $highestColumnIndex = PHPExcel_Cell::columnIndexFromString($highestColumn);
@@ -58,6 +79,53 @@ if (0 < $_FILES['file']['error']) {
             } else {
                 echo "Error deleting data: " . $db->error;
             }
+
+            // List
+
+            $sheet_list = $objPHPExcel->getSheet(1);
+            $total_rows_list = $sheet_list->getHighestRow();
+            $highestColumn_list      = $sheet_list->getHighestColumn();
+            $highestColumnIndex_list = PHPExcel_Cell::columnIndexFromString($highestColumn_list);
+            $records_list = array();
+
+            $sql_list_delete = "DELETE FROM excel_pick_list";
+            if (
+                $db->query($sql_list_delete) === TRUE
+            ) {
+                echo "All data deleted successfully";
+            } else {
+                echo "Error deleting data: " . $db->error;
+            }
+
+            for ($row = 2; $row <= $total_rows_list; ++$row) {
+                for ($col = 0; $col < $highestColumnIndex_list; ++$col) {
+                    $cell = $sheet_list->getCellByColumnAndRow($col, $row);
+                    $val = $cell->getValue();
+                    $records_list[$row][$col] = $val;
+                }
+            }
+
+            foreach ($records_list as $index => $row) {
+                if ($index > 0) {
+                    if ($row[1] && $row[2] && $row[3] && $row[4] && $row[7]) {
+                        $Container = $row[1];
+                        $Module = $row[2];
+                        $Part_number = $row[3];
+                        $Kanban = $row[4];
+                        $No_box = (int)$row[7];
+                        $query = "INSERT INTO excel_pick_list(Container, Module, Part_number, Kanban, No_box, is_complete) VALUES ('" . $Container . "','" . $Module . "','" . $Part_number . "','" . $Kanban . "','" . $No_box . "', 0)";
+                        echo $query;
+
+                        if (
+                            $db->query($query) === FALSE
+                        ) {
+                            echo "Error: pick list - " . $query . "<br>";
+                        }
+                    }
+                }
+            }
+            
+            // ========================
 
             for ($row = 2; $row <= $total_rows; ++$row) {
                 for ($col = 0; $col < $highestColumnIndex; ++$col) {
@@ -73,7 +141,7 @@ if (0 < $_FILES['file']['error']) {
                         $Container = $row[5];
                         var_dump($Container);
                         $Module = $row[6];
-                        $Qty_Boxes = $row[8];
+                        $Qty_Boxes = (int)$row[8];
                         $Stocking_Date = $row[11];
                         $shift = $row[12];
                         $query = "INSERT INTO excel_pick_import(Container, Module, Qty_Boxes, Stocking_Date, shift) VALUES ('" . $Container . "','" . $Module . "','" . $Qty_Boxes . "','" . $Stocking_Date . "','" . $shift . "')";

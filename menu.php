@@ -24,10 +24,10 @@
                             <i class="fas fa-angle-left right"></i>
                         </p>
                     </a>
-                    <ul class="nav nav-treeview">                        
+                    <ul class="nav nav-treeview">
                         <li class="nav-item">
                             <a href="team_leader.php" class="nav-link <?php echo ($page_name == 'Team Leader') ? 'active' : ''; ?>">
-                            <i class="far fa-circle nav-icon"></i>
+                                <i class="far fa-circle nav-icon"></i>
                                 <p>Team Leader</p>
                             </a>
                         </li>
@@ -39,13 +39,13 @@
                         </li>
                         <li class="nav-item">
                             <a href="overview_screen.php" class="nav-link <?php echo ($page_name == 'Overview Screen') ? 'active' : ''; ?>">
-                            <i class="far fa-circle nav-icon"></i>
+                                <i class="far fa-circle nav-icon"></i>
                                 <p>Overview1</p>
                             </a>
                         </li>
                         <li class="nav-item">
                             <a href="part_delivery_driver.php" class="nav-link <?php echo ($page_name == 'Part Delivery Overview') ? 'active' : ''; ?>">
-                            <i class="far fa-circle nav-icon"></i>
+                                <i class="far fa-circle nav-icon"></i>
                                 <p>Overview2</p>
                             </a>
                         </li>
@@ -83,6 +83,18 @@
                         </p>
                     </a>
                     <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="stocking_level.php" class="nav-link <?php echo ($page_name == 'Stocking Level') ? 'active' : ''; ?>">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Level</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="stocking_kanban.php" class="nav-link <?php echo ($page_name == 'Stocking Kanban') ? 'active' : ''; ?>">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Kanban</p>
+                            </a>
+                        </li>
                         <li class="nav-item">
                             <a href="stocking_input.php" class="nav-link <?php echo ($page_name == 'Stocking Input') ? 'active' : ''; ?>">
                                 <i class="far fa-circle nav-icon"></i>
@@ -146,7 +158,7 @@
                             <i class="fas fa-angle-left right"></i>
                         </p>
                     </a>
-                    <ul class="nav nav-treeview">                        
+                    <ul class="nav nav-treeview">
                         <li class="nav-item">
                             <a href="conveyance_pick.php" class="nav-link <?php echo ($page_name == 'Conveyance Pick') ? 'active' : ''; ?>">
                                 <i class="far fa-circle nav-icon"></i>
@@ -204,7 +216,7 @@
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Driver</p>
                             </a>
-                        </li>                        
+                        </li>
                     </ul>
                 </li>
                 <li class="nav-item <?php echo (strpos($page_name, 'Setting')) ? 'menu-open' : ''; ?>">
