@@ -72,7 +72,7 @@ $week_end = date('Y-m-d', strtotime("+6 days", strtotime($week_start)));
                                 <h2 class="m-0" style="display: inline">LOW</h2>
                             </div>
                             <div class="col-sm-9" style="text-transform: uppercase; text-align:center;background-color:#efa3a3;padding:5%;">
-                                <h3 class="m-0" style="display: inline">LOW OVERVIEW TOTAL: <span id="high_count">15</span></h3>
+                                <h3 class="m-0" style="display: inline">LOW OVERVIEW TOTAL: <span id="low_count"></span></h3>
                             </div>
                             <div id="low_content" class="row col-sm-12">
                             </div>
@@ -123,7 +123,9 @@ $week_end = date('Y-m-d', strtotime("+6 days", strtotime($week_start)));
                 }).done(function(res) {
                     res = JSON.parse(res);
                     $('#low_content').html(res.min);
+                    $('#low_count').html(res.min.split('<div').length - 1);
                     $('#high_content').html(res.max);
+                    $('#high_count').html(res.max.split('<div').length - 1);
                 });
             }
 
