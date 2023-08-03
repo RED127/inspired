@@ -195,19 +195,23 @@ require_once("assets.php");
                 <div class="card-header border-0">
                   <div class="d-flex justify-content-between">
                     <h3 class="card-title">
-                      System Fill Import
+                      System Fill && Packing List Import
                     </h3>
                   </div>
                 </div>
 
                 <div class="card-body">
-                  <div style="text-align: right;">
-
+                  <div style="text-align: right;display:flex;">
                     <label class="btn btn-primary" style="font-weight: normal;margin: 0px">
-                      Choose Excel File
+                      Choose File
                       <input type="file" hidden id="fileToUpload" name="fileToUpload" required>
                     </label>
-                    <button type="button" class="btn btn-success" id="upload_excel_id">Upload</button>
+                    &nbsp;
+                    &nbsp;
+                    <button type="button" class="btn btn-success" id="upload_excel_id">System Fill Upload</button>
+                    &nbsp;
+                    &nbsp;
+                    <button type="button" class="btn btn-success" id="upload_excel_pack_id">Packing List Upload</button>
                   </div>
                 </div>
 
@@ -541,12 +545,14 @@ require_once("assets.php");
       //Import pick list for system fill import
       $("#upload_excel_id").on('click', function() {
         if ($("#fileToUpload").val() == '') {
-          alert('Please select xlsx file');
+          alert('Please select CSV file');
           return false;
         }
         var file_data = $("#fileToUpload").prop('files')[0];
         var form_data = new FormData();
         form_data.append('file', file_data);
+        form_data.append('kind', 'system');
+
         $.ajax({
           url: 'excel_pick_import.php',
           cache: false,
@@ -565,6 +571,37 @@ require_once("assets.php");
       document.getElementById("upload_excel_id").addEventListener("click", function() {
         document.getElementById("spinner").classList.remove("hide");
       });
+
+      //Import pick list for system fill import
+      $("#upload_excel_pack_id").on('click', function() {
+        if ($("#fileToUpload").val() == '') {
+          alert('Please select CSV file');
+          return false;
+        }
+        var file_data = $("#fileToUpload").prop('files')[0];
+        var form_data = new FormData();
+        form_data.append('file', file_data);
+        form_data.append('kind', "pack");
+
+        $.ajax({
+          url: 'excel_pick_import.php',
+          cache: false,
+          contentType: false,
+          processData: false,
+          data: form_data,
+          type: 'post',
+          success: function(result) {
+            window.location.href = "./stocking_kanban.php";
+            $("#fileToUpload").val("");
+          }
+        });
+
+      });
+      //spinner
+      document.getElementById("upload_excel_pack_id").addEventListener("click", function() {
+        document.getElementById("spinner").classList.remove("hide");
+      });
+
       /*
       Dolly
        */
@@ -788,8 +825,8 @@ require_once("assets.php");
             delivery_address: delivery_address,
             delivery_address2: delivery_address2,
             pick_seq: Number(pick_seq),
-            min:Number(min),
-            max:Number(max)
+            min: Number(min),
+            max: Number(max)
           },
         }).done(function(result) {
           console.log(result);

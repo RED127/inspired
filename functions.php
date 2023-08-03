@@ -988,8 +988,7 @@ function read_history($post_data)
 function read_kanban_list()
 {
     global $db;
-
-    $query = "SELECT a.*, b.* FROM `excel_pick_list` AS a LEFT JOIN `part_to_kanban` AS b ON a.`Kanban` = b.`kanban` WHERE a.`Part_number` = b.`part_number`";
+    $query = "SELECT * FROM `excel_pick_list` GROUP BY Kanban";
     $result = $db->query($query);
     echo '<table id="kanban_table" class="table table-bordered table-striped dataTable dtr-inline">';
     echo '<thead>';
@@ -1001,12 +1000,30 @@ function read_kanban_list()
     echo '</thead>';
     echo '<tbody>';
     while ($row = mysqli_fetch_object($result)) {
+        $itemQuery = "SELECT * FROM `excel_pick_list` WHERE Kanban = '" . $row->Kanban . "'";
+        $kanbanQuery = "SELECT * FROM `part_to_kanban` WHERE Kanban = '" . $row->Kanban . "'";
+        $itemResult = $db->query($itemQuery);
+        $kanbanResult = $db->query($kanbanQuery);
+
+        $stock = 0;
+        $max = '';
+        $min = '';
+        while ($rowItem = mysqli_fetch_object($itemResult)) {
+            $stock += (int)$rowItem->No_box;
+        }
+
+        if (mysqli_num_rows($kanbanResult) > 0) {
+            $obj = mysqli_fetch_object($kanbanResult);
+            $max = $obj->max;
+            $min = $obj->min;
+        }
+
         echo '<tr>';
         echo '<td>' . $row->Kanban . '</td>';
-        echo '<td>' . $row->No_box . '</td>';
+        echo '<td>' . $stock . '</td>';
         echo '<td>' . $row->Part_number . '</td>';
-        echo '<td>' . $row->max . '</td>';
-        echo '<td>' . $row->min . '</td>';
+        echo '<td>' . $max . '</td>';
+        echo '<td>' . $min . '</td>';
         echo '</tr>';
     }
     echo '</tbody>';
@@ -1017,20 +1034,31 @@ function read_stock_level()
 {
     global $db;
 
-    $query = "select a.*, b.* from `excel_pick_list` as a left join `part_to_kanban` as b on a.`Kanban` = b.`kanban` WHERE a.`No_box` < b.`min` or a.`No_box` > b.`max`";
+    $updateQuery = "UPDATE `excel_pick_list` JOIN `final_data` ON `excel_pick_list`.Container = `final_data`.Container SET `excel_pick_list`.is_complete = `final_data`.complete WHERE `excel_pick_list`.Module = `final_data`.Module";
+    $db->query($updateQuery);
+
+    $query = "SELECT a.*, b.* FROM `excel_pick_list` AS a LEFT JOIN `part_to_kanban` AS b ON a.`Kanban` = b.`kanban` WHERE (a.`No_box` < b.`min` OR a.`No_box` > b.`max`) AND a.`is_complete` = 1 GROUP BY a.`Kanban`";
     $result = $db->query($query);
     $minContent = "";
     $maxContent = "";
     while ($row = mysqli_fetch_object($result)) {
-        if ($row->No_box < $row->min) {
+        $stock = 0;
+        $itemQuery = "SELECT * FROM `excel_pick_list` WHERE Kanban = '" . $row->Kanban . "' AND is_complete = 1";
+        $itemResult = $db->query($itemQuery);
+
+        while ($rowItem = mysqli_fetch_object($itemResult)) {
+            $stock += (int)$rowItem->No_box;
+        }
+
+        if ($stock < $row->min) {
             $minContent = $minContent . "<div class='low-item'>
                                     <h2>{$row->Kanban}</h2>
-                                    <h2>{$row->No_box}/{$row->min}</h2>
+                                    <h2>{$stock}/{$row->min}</h2>
                                 </div>";
-        } else if ($row->No_box > $row->max) {
+        } else if ($stock > $row->max) {
             $maxContent = $maxContent . "<div class='low-item'>
                                     <h2>{$row->Kanban}</h2>
-                                    <h2>{$row->No_box}/{$row->max}</h2>
+                                    <h2>{$stock}/{$row->max}</h2>
                                 </div>";
         }
     }

@@ -150,15 +150,6 @@ require_once("assets.php");
     <?php include("menu.php"); ?>
     <?php include("latest_updated.php"); ?>
     <div class="content-wrapper">
-      <div class="content-header">
-        <div class="container-fluid">
-          <div class="row mb-2">
-            <div class="col-sm-12">
-              <h1 class="m-0" style="display: inline"><?php echo $page_name; ?></h1>
-            </div>
-          </div>
-        </div>
-      </div>
       <div class="content">
         <div class="container-fluid">
           <div class="row">
@@ -306,6 +297,11 @@ require_once("assets.php");
   <!-- REQUIRED SCRIPTS -->
 </body>
 <script>
+  var dayRowNum = 0,
+    nightRowNum = 0;
+  $(document).keypress(function(event) {
+    $("#cont_mod").focus();
+  });
   // document.getElementById("date_picker").valueAsDate = new Date();
   $(document).ready(function() {
     $("#cont_mod").focus();
@@ -352,247 +348,272 @@ require_once("assets.php");
       let contModStr = $("#cont_mod").val();
 
       // in case of day shift
-      for (let i = 0; i < dayRowNum - 1; i++) {
-        let contVal = $($("tr[dayrowid='" + i + "'] td:first")).text();
-        let modVal = $($("tr[dayrowid='" + i + "'] td:nth-child(2)")).text();
-        if (contModStr.includes(contVal) && contModStr.includes(modVal)) {
-          $($("tr[dayrowid='" + i + "'] td:first")).css("background-color", "green");
-          $($("tr[dayrowid='" + i + "'] td:nth-child(2)")).css("background-color", "green");
-          $($("#dayShiftTB tr")[i + 1]).attr("greenFlag", "1");
-          let selRow = $($("#dayShiftTB tr")[i + 1]);
-          let loadVal = parseInt($($(selRow).children()[4]).attr("load"));
-          let tmpDayRowID = $(selRow).attr("dayrowid");
+      if (dayRowNum > 0) {
+        for (let i = 0; i < dayRowNum - 1; i++) {
+          let contVal = $($("tr[dayrowid='" + i + "'] td:first")).text();
+          let modVal = $($("tr[dayrowid='" + i + "'] td:nth-child(2)")).text();
+          if (contModStr.includes(contVal) && contModStr.includes(modVal)) {
+            $($("tr[dayrowid='" + i + "'] td:first")).css("background-color", "#1EB823");
+            $($("tr[dayrowid='" + i + "'] td:nth-child(2)")).css("background-color", "#1EB823");
+            $($("tr[dayrowid='" + i + "'] td:first")).css("color", "white");
+            $($("tr[dayrowid='" + i + "'] td:nth-child(2)")).css("color", "white");
 
-          // Save Data
-          var rowID1 = $("tr[dayrowid='" + i + "']").attr("id");
-          var rowID2 = $('#' + rowID1).next().next().next().attr("id");
-          var count = $("tr[dayrowid='" + i + "']").children(':nth-child(3)').text();
-          var curretUser = '';
-          var liveTime = '';
-          var liveBuild = liveVal;
-          var startInfo = {};
-          var finishInfo = {};
-          var complete = true;
-          // Save Data End
+            $($("#dayShiftTB tr")[i + 1]).attr("greenFlag", "1");
+            let selRow = $($("#dayShiftTB tr")[i + 1]);
+            let loadVal = parseInt($($(selRow).children()[4]).attr("load"));
+            let tmpDayRowID = $(selRow).attr("dayrowid");
 
-          if (tmpDayRowID % 2 === 0) {
-            let sibling = parseInt(tmpDayRowID) + 1;
-            curretUser = $($("tr[dayrowid='" + sibling + "'] td:nth-child(5)")).children("div[name='dayLCUser']").text();
-            liveTime = $($("tr[dayrowid='" + sibling + "'] td:nth-child(5)")).children("div[name='dayLCTime']").text();
-            startInfo = {
-              userName: $($("tr[dayrowid='" + sibling + "'] td:nth-child(5)")).children("div[name='dayStUser']").text(),
-              regTime: $($("tr[dayrowid='" + sibling + "'] td:nth-child(5)")).children("div[name='dayStTime']").text()
+            // Save Data
+            var rowID1 = $("tr[dayrowid='" + i + "']").attr("id");
+            var rowID2 = $('#' + rowID1).next().next().next().attr("id");
+            var s_cont = $("tr[dayrowid='" + i + "']").children(':first').text();
+            var s_mod = $("tr[dayrowid='" + i + "']").children(':nth-child(2)').text();
+            var count = $("tr[dayrowid='" + i + "']").children(':nth-child(3)').text();
+            var curretUser = '';
+            var liveTime = '';
+            var liveBuild = liveVal;
+            var startInfo = {};
+            var finishInfo = {};
+            var complete = true;
+            // Save Data End
+
+            if (tmpDayRowID % 2 === 0) {
+              let sibling = parseInt(tmpDayRowID) + 1;
+              curretUser = $($("tr[dayrowid='" + sibling + "'] td:nth-child(5)")).children("div[name='dayLCUser']").text();
+              liveTime = $($("tr[dayrowid='" + sibling + "'] td:nth-child(5)")).children("div[name='dayLCTime']").text();
+              startInfo = {
+                userName: $($("tr[dayrowid='" + sibling + "'] td:nth-child(5)")).children("div[name='dayStUser']").text(),
+                regTime: $($("tr[dayrowid='" + sibling + "'] td:nth-child(5)")).children("div[name='dayStTime']").text()
+              }
+              finishInfo = {
+                userName: $($("tr[dayrowid='" + sibling + "'] td:nth-child(6)")).children("div[name='dayFnUser']").text(),
+                regTime: $($("tr[dayrowid='" + sibling + "'] td:nth-child(6)")).children("div[name='dayFnTime']").text()
+              }
+              if ($("tr[dayrowid='" + sibling + "']").attr("greenFlag") == "1") {
+                var dayStSel = document.getElementById("dayStSel_" + parseInt(i / 2 + 1));
+                var dayFnSel = document.getElementById("dayFnSel_" + parseInt(i / 2 + 1));
+                var dayLCSel = document.getElementById("dayLCSel_" + parseInt(i / 2 + 1));
+                dayStSel.disabled = false;
+                dayFnSel.disabled = false;
+                dayLCSel.disabled = false;
+                var startSelectElement = document.getElementById("dayStSel_" + parseInt(i / 2 + 1));
+                var finishSelectElement = document.getElementById("dayFnSel_" + parseInt(i / 2 + 1));
+                var loadSelectElement = document.getElementById("dayLCSel_" + parseInt(i / 2 + 1));
+
+                $('#' + 'dayStSel_' + parseInt(i / 2 + 1)).parent().prev().css('background-color', '#1EB823');
+                $('#' + 'dayStSel_' + parseInt(i / 2 + 1)).parent().prev().css('color', 'white');
+
+                userNames.map(name => {
+                  var option = document.createElement("option");
+                  option.text = name;
+                  startSelectElement.add(option);
+
+                  var optionClone = option.cloneNode(true);
+                  var optionCloneLoad = option.cloneNode(true);
+                  finishSelectElement.add(optionClone);
+                  loadSelectElement.add(optionCloneLoad);
+                })
+              }
+            } else {
+              let sibling = parseInt(tmpDayRowID) - 1;
+              curretUser = $($("tr[dayrowid='" + sibling + "'] td:nth-child(5)")).children("div[name='dayLCUser']").text();
+              liveTime = $($("tr[dayrowid='" + sibling + "'] td:nth-child(5)")).children("div[name='dayLCTime']").text();
+
+              startInfo = {
+                userName: $($("tr[dayrowid='" + sibling + "'] td:nth-child(5)")).children("div[name='dayStUser']").text(),
+                regTime: $($("tr[dayrowid='" + sibling + "'] td:nth-child(5)")).children("div[name='dayStTime']").text()
+              }
+              finishInfo = {
+                userName: $($("tr[dayrowid='" + sibling + "'] td:nth-child(6)")).children("div[name='dayFnUser']").text(),
+                regTime: $($("tr[dayrowid='" + sibling + "'] td:nth-child(6)")).children("div[name='dayFnTime']").text()
+              }
+              if ($("tr[dayrowid='" + sibling + "']").attr("greenFlag") == "1") {
+                var dayStSel = document.getElementById("dayStSel_" + parseInt(i / 2 + 1));
+                var dayFnSel = document.getElementById("dayFnSel_" + parseInt(i / 2 + 1));
+                var dayLCSel = document.getElementById("dayLCSel_" + parseInt(i / 2 + 1));
+                dayStSel.disabled = false;
+                dayFnSel.disabled = false;
+                dayLCSel.disabled = false;
+                var startSelectElement = document.getElementById("dayStSel_" + parseInt(i / 2 + 1));
+                var finishSelectElement = document.getElementById("dayFnSel_" + parseInt(i / 2 + 1));
+                var loadSelectElement = document.getElementById("dayLCSel_" + parseInt(i / 2 + 1));
+
+                $('#' + 'dayStSel_' + parseInt(i / 2 + 1)).parent().prev().css('background-color', '#1EB823');
+                $('#' + 'dayStSel_' + parseInt(i / 2 + 1)).parent().prev().css('color', 'white');
+
+                userNames.map(name => {
+                  var option = document.createElement("option");
+                  option.text = name;
+                  startSelectElement.add(option);
+
+                  var optionClone = option.cloneNode(true);
+                  var optionCloneLoad = option.cloneNode(true);
+                  finishSelectElement.add(optionClone);
+                  loadSelectElement.add(optionCloneLoad);
+                })
+              }
             }
-            finishInfo = {
-              userName: $($("tr[dayrowid='" + sibling + "'] td:nth-child(6)")).children("div[name='dayFnUser']").text(),
-              regTime: $($("tr[dayrowid='" + sibling + "'] td:nth-child(6)")).children("div[name='dayFnTime']").text()
+
+            if (rowID1) {
+              let data = {
+                cont: s_cont,
+                mod: s_mod,
+                firstID: rowID1,
+                secondID: rowID2,
+                currentUser: curretUser,
+                count: count,
+                liveTime: liveTime,
+                liveBuild: liveBuild,
+                startInfo: startInfo,
+                finishInfo: finishInfo,
+                complete: complete ? "1" : "0"
+              };
+              finalData(data);
             }
-            if ($("tr[dayrowid='" + sibling + "']").attr("greenFlag") == "1") {
-              var dayStSel = document.getElementById("dayStSel_" + parseInt(i / 2 + 1));
-              var dayFnSel = document.getElementById("dayFnSel_" + parseInt(i / 2 + 1));
-              var dayLCSel = document.getElementById("dayLCSel_" + parseInt(i / 2 + 1));
-              dayStSel.disabled = false;
-              dayFnSel.disabled = false;
-              dayLCSel.disabled = false;
-              var startSelectElement = document.getElementById("dayStSel_" + parseInt(i / 2 + 1));
-              var finishSelectElement = document.getElementById("dayFnSel_" + parseInt(i / 2 + 1));
-              var loadSelectElement = document.getElementById("dayLCSel_" + parseInt(i / 2 + 1));
 
-              $('#' + 'dayStSel_' + parseInt(i / 2 + 1)).parent().prev().css('background-color', 'green');
+            $("#cont_mod").val("");
 
-              userNames.map(name => {
-                var option = document.createElement("option");
-                option.text = name;
-                startSelectElement.add(option);
-
-                var optionClone = option.cloneNode(true);
-                var optionCloneLoad = option.cloneNode(true);
-                finishSelectElement.add(optionClone);
-                loadSelectElement.add(optionCloneLoad);
-              })
-            }
-          } else {
-            let sibling = parseInt(tmpDayRowID) - 1;
-            curretUser = $($("tr[dayrowid='" + sibling + "'] td:nth-child(5)")).children("div[name='dayLCUser']").text();
-            liveTime = $($("tr[dayrowid='" + sibling + "'] td:nth-child(5)")).children("div[name='dayLCTime']").text();
-
-            startInfo = {
-              userName: $($("tr[dayrowid='" + sibling + "'] td:nth-child(5)")).children("div[name='dayStUser']").text(),
-              regTime: $($("tr[dayrowid='" + sibling + "'] td:nth-child(5)")).children("div[name='dayStTime']").text()
-            }
-            finishInfo = {
-              userName: $($("tr[dayrowid='" + sibling + "'] td:nth-child(6)")).children("div[name='dayFnUser']").text(),
-              regTime: $($("tr[dayrowid='" + sibling + "'] td:nth-child(6)")).children("div[name='dayFnTime']").text()
-            }
-            if ($("tr[dayrowid='" + sibling + "']").attr("greenFlag") == "1") {
-              var dayStSel = document.getElementById("dayStSel_" + parseInt(i / 2 + 1));
-              var dayFnSel = document.getElementById("dayFnSel_" + parseInt(i / 2 + 1));
-              var dayLCSel = document.getElementById("dayLCSel_" + parseInt(i / 2 + 1));
-              dayStSel.disabled = false;
-              dayFnSel.disabled = false;
-              dayLCSel.disabled = false;
-              var startSelectElement = document.getElementById("dayStSel_" + parseInt(i / 2 + 1));
-              var finishSelectElement = document.getElementById("dayFnSel_" + parseInt(i / 2 + 1));
-              var loadSelectElement = document.getElementById("dayLCSel_" + parseInt(i / 2 + 1));
-
-              $('#' + 'dayStSel_' + parseInt(i / 2 + 1)).parent().prev().css('background-color', 'green');
-
-              userNames.map(name => {
-                var option = document.createElement("option");
-                option.text = name;
-                startSelectElement.add(option);
-
-                var optionClone = option.cloneNode(true);
-                var optionCloneLoad = option.cloneNode(true);
-                finishSelectElement.add(optionClone);
-                loadSelectElement.add(optionCloneLoad);
-              })
-            }
           }
-
-          if (rowID1) {
-            let data = {
-              firstID: rowID1,
-              secondID: rowID2,
-              currentUser: curretUser,
-              count: count,
-              liveTime: liveTime,
-              liveBuild: liveBuild,
-              startInfo: startInfo,
-              finishInfo: finishInfo,
-              complete: complete ? "1" : "0"
-            };
-            finalData(data);
-          }
-
-          $("#cont_mod").val("");
-
         }
       }
 
       // in case of night shift
-      for (let i = 0; i < nightRowNum; i++) {
-        let contVal = $($("tr[nightrowid='" + i + "'] td:first")).text();
-        let modVal = $($("tr[nightrowid='" + i + "'] td:nth-child(2)")).text();
-        if (contModStr.includes(contVal) && contModStr.includes(modVal)) {
-          $($("tr[nightrowid='" + i + "'] td:first")).css("background-color", "green");
-          $($("tr[nightrowid='" + i + "'] td:nth-child(2)")).css("background-color", "green");
-          $($("#nightShiftTB tr")[i + 1]).attr("greenFlag", "1");
-          let selRow = $($("#nightShiftTB tr")[i + 1]);
-          let loadVal = parseInt($($(selRow).children()[4]).attr("load"));
-          let tmpDayRowID = $(selRow).attr("nightrowid");
+      if (nightRowNum > 0) {
+        for (let i = 0; i < nightRowNum; i++) {
+          let contVal = $($("tr[nightrowid='" + i + "'] td:first")).text();
+          let modVal = $($("tr[nightrowid='" + i + "'] td:nth-child(2)")).text();
+          if (contModStr.includes(contVal) && contModStr.includes(modVal)) {
+            $($("tr[nightrowid='" + i + "'] td:first")).css("background-color", "#1EB823");
+            $($("tr[nightrowid='" + i + "'] td:nth-child(2)")).css("background-color", "#1EB823");
+            $($("tr[nightrowid='" + i + "'] td:first")).css("color", "white");
+            $($("tr[nightrowid='" + i + "'] td:nth-child(2)")).css("color", "white");
 
-          // Save Data
-          var rowID1 = $("tr[nightrowid='" + i + "']").attr("id");
-          var rowID2 = $('#' + rowID1).next().next().next().attr("id");
-          var count = $("tr[nightrowid='" + i + "']").children(':nth-child(3)').text();
-          var curretUser = '';
-          var liveTime = '';
-          var liveBuild = liveVal;
-          var startInfo = {};
-          var finishInfo = {};
-          var complete = true;
-          // Save Data End
+            $($("#nightShiftTB tr")[i + 1]).attr("greenFlag", "1");
+            let selRow = $($("#nightShiftTB tr")[i + 1]);
+            let loadVal = parseInt($($(selRow).children()[4]).attr("load"));
+            let tmpDayRowID = $(selRow).attr("nightrowid");
 
-          if (tmpDayRowID % 2 === 0) {
-            let sibling = parseInt(tmpDayRowID) + 1;
-            currentUser = $($("tr[nightrowid='" + sibling + "'] td:nth-child(5)")).children("div[name='nightLCUser']").text();
-            liveTime = $($("tr[nightrowid='" + sibling + "'] td:nth-child(5)")).children("div[name='nightLCTime']").text();
+            // Save Data
+            var rowID1 = $("tr[nightrowid='" + i + "']").attr("id");
+            var rowID2 = $('#' + rowID1).next().next().next().attr("id");
+            var s_cont = $("tr[nightrowid='" + i + "']").children(":first").text();
+            var s_mod = $("tr[nightrowid='" + i + "']").children(":nth-child(2)").text();
+            var count = $("tr[nightrowid='" + i + "']").children(':nth-child(3)').text();
+            var curretUser = '';
+            var liveTime = '';
+            var liveBuild = liveVal;
+            var startInfo = {};
+            var finishInfo = {};
+            var complete = true;
+            // Save Data End
 
-            startInfo = {
-              userName: $($("tr[nightrowid='" + sibling + "'] td:nth-child(5)")).children("div[name='nightStUser']").text(),
-              regTime: $($("tr[nightrowid='" + sibling + "'] td:nth-child(5)")).children("div[name='nightStTime']").text()
+            if (tmpDayRowID % 2 === 0) {
+              let sibling = parseInt(tmpDayRowID) + 1;
+              currentUser = $($("tr[nightrowid='" + sibling + "'] td:nth-child(5)")).children("div[name='nightLCUser']").text();
+              liveTime = $($("tr[nightrowid='" + sibling + "'] td:nth-child(5)")).children("div[name='nightLCTime']").text();
+
+              startInfo = {
+                userName: $($("tr[nightrowid='" + sibling + "'] td:nth-child(5)")).children("div[name='nightStUser']").text(),
+                regTime: $($("tr[nightrowid='" + sibling + "'] td:nth-child(5)")).children("div[name='nightStTime']").text()
+              }
+              finishInfo = {
+                userName: $($("tr[nightrowid='" + sibling + "'] td:nth-child(6)")).children("div[name='nightFnUser']").text(),
+                regTime: $($("tr[nightrowid='" + sibling + "'] td:nth-child(6)")).children("div[name='nightFnTime']").text()
+              }
+              if ($("tr[nightrowid='" + sibling + "']").attr("greenFlag") == "1") {
+                var nightStSel = document.getElementById("nightStSel_" + parseInt(i / 2 + 1));
+                var nightFnSel = document.getElementById("nightFnSel_" + parseInt(i / 2 + 1));
+                var nightLCSel = document.getElementById("nightLCSel_" + parseInt(i / 2 + 1));
+                nightStSel.disabled = false;
+                nightFnSel.disabled = false;
+                nightLCSel.disabled = false;
+                var startSelectElement = document.getElementById("nightStSel_" + parseInt(i / 2 + 1));
+                var finishSelectElement = document.getElementById("nightFnSel_" + parseInt(i / 2 + 1));
+                var loadSelectElement = document.getElementById("nightLCSel_" + parseInt(i / 2 + 1));
+
+                $('#' + 'nightStSel_' + parseInt(i / 2 + 1)).parent().prev().css('background-color', '#1EB823');
+                $('#' + 'nightStSel_' + parseInt(i / 2 + 1)).parent().prev().css('color', 'white');
+
+                userNames.map(name => {
+                  var option = document.createElement("option");
+                  option.text = name;
+                  startSelectElement.add(option);
+
+                  var optionClone = option.cloneNode(true);
+                  var optionCloneLC = option.cloneNode(true);
+                  finishSelectElement.add(optionClone);
+                  loadSelectElement.add(optionCloneLC);
+                })
+              }
+            } else {
+              let sibling = parseInt(tmpDayRowID) - 1;
+              currentUser = $($("tr[nightrowid='" + sibling + "'] td:nth-child(5)")).children("div[name='nightLCUser']").text();
+              liveTime = $($("tr[nightrowid='" + sibling + "'] td:nth-child(5)")).children("div[name='nightLCTime']").text();
+
+              startInfo = {
+                userName: $($("tr[nightrowid='" + sibling + "'] td:nth-child(5)")).children("div[name='nightStUser']").text(),
+                regTime: $($("tr[nightrowid='" + sibling + "'] td:nth-child(5)")).children("div[name='nightStTime']").text()
+              }
+              finishInfo = {
+                userName: $($("tr[nightrowid='" + sibling + "'] td:nth-child(6)")).children("div[name='nightFnUser']").text(),
+                regTime: $($("tr[nightrowid='" + sibling + "'] td:nth-child(6)")).children("div[name='nightFnTime']").text()
+              }
+              if ($("tr[nightrowid='" + sibling + "']").attr("greenFlag") == "1") {
+                var nightStSel = document.getElementById("nightStSel_" + parseInt(i / 2 + 1));
+                var nightFnSel = document.getElementById("nightFnSel_" + parseInt(i / 2 + 1));
+                var nightLCSel = document.getElementById("nightLCSel_" + parseInt(i / 2 + 1));
+                nightStSel.disabled = false;
+                nightFnSel.disabled = false;
+                nightLCSel.disabled = false;
+                var startSelectElement = document.getElementById("nightStSel_" + parseInt(i / 2 + 1));
+                var finishSelectElement = document.getElementById("nightFnSel_" + parseInt(i / 2 + 1));
+                var loadSelectElement = document.getElementById("nightLCSel_" + parseInt(i / 2 + 1));
+
+                $('#' + 'nightStSel_' + parseInt(i / 2 + 1)).parent().prev().css('background-color', '#1EB823');
+                $('#' + 'nightStSel_' + parseInt(i / 2 + 1)).parent().prev().css('color', 'white');
+
+                userNames.map(name => {
+                  var option = document.createElement("option");
+                  option.text = name;
+                  startSelectElement.add(option);
+
+                  var optionClone = option.cloneNode(true);
+                  var optionCloneLC = option.cloneNode(true);
+                  finishSelectElement.add(optionClone);
+                  loadSelectElement.add(optionCloneLC);
+                })
+              }
             }
-            finishInfo = {
-              userName: $($("tr[nightrowid='" + sibling + "'] td:nth-child(6)")).children("div[name='nightFnUser']").text(),
-              regTime: $($("tr[nightrowid='" + sibling + "'] td:nth-child(6)")).children("div[name='nightFnTime']").text()
+            if (rowID1) {
+              let data = {
+                cont: s_cont,
+                mod: s_mod,
+                firstID: rowID1,
+                secondID: rowID2,
+                currentUser: curretUser,
+                count: count,
+                liveTime: liveTime,
+                liveBuild: liveBuild,
+                startInfo: startInfo,
+                finishInfo: finishInfo,
+                complete: complete ? "1" : "0"
+              };
+              finalData(data);
             }
-            if ($("tr[nightrowid='" + sibling + "']").attr("greenFlag") == "1") {
-              var nightStSel = document.getElementById("nightStSel_" + parseInt(i / 2 + 1));
-              var nightFnSel = document.getElementById("nightFnSel_" + parseInt(i / 2 + 1));
-              var nightLCSel = document.getElementById("nightLCSel_" + parseInt(i / 2 + 1));
-              nightStSel.disabled = false;
-              nightFnSel.disabled = false;
-              nightLCSel.disabled = false;
-              var startSelectElement = document.getElementById("nightStSel_" + parseInt(i / 2 + 1));
-              var finishSelectElement = document.getElementById("nightFnSel_" + parseInt(i / 2 + 1));
-              var loadSelectElement = document.getElementById("nightLCSel_" + parseInt(i / 2 + 1));
 
-              $('#' + 'nightStSel_' + parseInt(i / 2 + 1)).parent().prev().css('background-color', 'green');
-
-              userNames.map(name => {
-                var option = document.createElement("option");
-                option.text = name;
-                startSelectElement.add(option);
-
-                var optionClone = option.cloneNode(true);
-                var optionCloneLC = option.cloneNode(true);
-                finishSelectElement.add(optionClone);
-                loadSelectElement.add(optionCloneLC);
-              })
-            }
-          } else {
-            let sibling = parseInt(tmpDayRowID) - 1;
-            currentUser = $($("tr[nightrowid='" + sibling + "'] td:nth-child(5)")).children("div[name='nightLCUser']").text();
-            liveTime = $($("tr[nightrowid='" + sibling + "'] td:nth-child(5)")).children("div[name='nightLCTime']").text();
-
-            startInfo = {
-              userName: $($("tr[nightrowid='" + sibling + "'] td:nth-child(5)")).children("div[name='nightStUser']").text(),
-              regTime: $($("tr[nightrowid='" + sibling + "'] td:nth-child(5)")).children("div[name='nightStTime']").text()
-            }
-            finishInfo = {
-              userName: $($("tr[nightrowid='" + sibling + "'] td:nth-child(6)")).children("div[name='nightFnUser']").text(),
-              regTime: $($("tr[nightrowid='" + sibling + "'] td:nth-child(6)")).children("div[name='nightFnTime']").text()
-            }
-            if ($("tr[nightrowid='" + sibling + "']").attr("greenFlag") == "1") {
-              var nightStSel = document.getElementById("nightStSel_" + parseInt(i / 2 + 1));
-              var nightFnSel = document.getElementById("nightFnSel_" + parseInt(i / 2 + 1));
-              var nightLCSel = document.getElementById("nightLCSel_" + parseInt(i / 2 + 1));
-              nightStSel.disabled = false;
-              nightFnSel.disabled = false;
-              nightLCSel.disabled = false;
-              var startSelectElement = document.getElementById("nightStSel_" + parseInt(i / 2 + 1));
-              var finishSelectElement = document.getElementById("nightFnSel_" + parseInt(i / 2 + 1));
-              var loadSelectElement = document.getElementById("nightLCSel_" + parseInt(i / 2 + 1));
-
-              $('#' + 'nightStSel_' + parseInt(i / 2 + 1)).parent().prev().css('background-color', 'green');
-
-              userNames.map(name => {
-                var option = document.createElement("option");
-                option.text = name;
-                startSelectElement.add(option);
-
-                var optionClone = option.cloneNode(true);
-                var optionCloneLC = option.cloneNode(true);
-                finishSelectElement.add(optionClone);
-                loadSelectElement.add(optionCloneLC);
-              })
-            }
           }
-          if (rowID1) {
-            let data = {
-              firstID: rowID1,
-              secondID: rowID2,
-              currentUser: curretUser,
-              count: count,
-              liveTime: liveTime,
-              liveBuild: liveBuild,
-              startInfo: startInfo,
-              finishInfo: finishInfo,
-              complete: complete ? "1" : "0"
-            };
-            finalData(data);
-          }
-
-          $("#cont_mod").val("");
         }
       }
+
       finalData();
+      $("#cont_mod").val("");
     }
   })
 
   function selectDayLC(row) {
-    $("#dayLCSel_" + row).parent().css('background-color', 'green');
+    $("#dayLCSel_" + row).parent().css('background-color', '#1EB823');
+    $("#dayLCSel_" + row).parent().css('color', 'white');
+
     var selectElement = document.getElementById("dayLCSel_" + row);
     var selectedValue = selectElement.value;
 
@@ -608,7 +629,9 @@ require_once("assets.php");
   }
 
   function selectNightLC(row) {
-    $("#nightLCSel_" + row).parent().css('background-color', 'green');
+    $("#nightLCSel_" + row).parent().css('background-color', '#1EB823');
+    $("#nightLCSel_" + row).parent().css('color', 'white');
+
     var selectElement = document.getElementById("nightLCSel_" + row);
     var selectedValue = selectElement.value;
 
@@ -641,6 +664,8 @@ require_once("assets.php");
   }
   //Select finish user name and set it and time for day shift
   function selectDayFnName(row) {
+    $("#dayFnSel_" + row).parent().css('background-color', '#1EB823');
+    $("#dayFnSel_" + row).parent().css('color', 'white');
     activeRow(row, 'day');
     activeStartBox("dayFnSel_" + row);
     var selectElement = document.getElementById("dayFnSel_" + row);
@@ -675,6 +700,8 @@ require_once("assets.php");
   }
   //Select finish user name and set it and time for night shift
   function selectNightFnName(row) {
+    $("#nightFnSel_" + row).parent().css('background-color', '#1EB823');
+    $("#nightFnSel_" + row).parent().css('color', 'white');
     activeRow(row, 'night');
     activeStartBox("nightFnSel_" + row);
     var selectElement = document.getElementById("nightFnSel_" + row);
@@ -703,15 +730,20 @@ require_once("assets.php");
             var len = 0;
             JSON.parse(data).forEach(function(item) {
               if (Number(item.complete)) {
-                $("#" + item.firstID).children(":first").css("background", "green");
-                $("#" + item.firstID).children(":nth-child(2)").css("background", "green");
+                $("#" + item.firstID).children(":first").css("background-color", "#1EB823");
+                $("#" + item.firstID).children(":nth-child(2)").css("background-color", "#1EB823");
+                $("#" + item.firstID).children(":first").css("color", "white");
+                $("#" + item.firstID).children(":nth-child(2)").css("color", "white");
               }
               $("#" + item.firstID).children(":nth-child(3)").html(item.count);
 
               $("#" + item.firstID).children(":nth-child(4)").html(Number(item.liveBuild) ? item.liveBuild : "");
 
               if (item.finishNm && item.finishTime) {
-                $("#" + item.firstID).children(":nth-child(6)").css("background", "green");
+                $("#" + item.firstID).children(":nth-child(6)").css("background-color", "#1EB823");
+                $("#" + item.firstID).children(":nth-child(7)").css("background-color", "#1EB823");
+                $("#" + item.firstID).children(":nth-child(6)").css("color", "white");
+                $("#" + item.firstID).children(":nth-child(7)").css("color", "white");
               }
 
               $("#" + item.firstID).children(":nth-child(5)").children("div:first").html(item.userNm);
@@ -732,7 +764,8 @@ require_once("assets.php");
                   $("#" + item.firstID).children(":nth-child(5)").children(':first').html(item.userNm);
                   $("#" + item.firstID).children(":nth-child(5)").children(':nth-child(2)').html(item.liveTime);
                   if (item.userNm && item.liveTime) {
-                    $("#" + item.firstID).children(":nth-child(5)").css("background", "green");
+                    $("#" + item.firstID).children(":nth-child(5)").css("background-color", "#1EB823");
+                    $("#" + item.firstID).children(":nth-child(5)").css("color", "white");
                   }
 
                   // Select 
@@ -775,7 +808,8 @@ require_once("assets.php");
                 $("#" + item.firstID).children(":nth-child(5)").children(':first').html(item.userNm);
                 $("#" + item.firstID).children(":nth-child(5)").children(':nth-child(2)').html(item.liveTime);
                 if (item.userNm && item.liveTime) {
-                  $("#" + item.firstID).children(":nth-child(5)").css("background", "green");
+                  $("#" + item.firstID).children(":nth-child(5)").css("background-color", "#1EB823");
+                  $("#" + item.firstID).children(":nth-child(5)").css("color", "white");
                 }
 
                 // Select 
@@ -837,7 +871,7 @@ require_once("assets.php");
   // 2023-7-20
 
   function saveData(row, col, state) {
-    var rowID1, rowID2, curretUser, count, liveTime, liveBuild, complete;
+    var cont, mod, rowID1, rowID2, curretUser, count, liveTime, liveBuild, complete;
     var startInfo = {};
     var finishInfo = {};
     if (col == 'start') {
@@ -849,9 +883,11 @@ require_once("assets.php");
       }
       rowID1 = $(selID).parent().parent().attr("id");
       rowID2 = $('#' + rowID1).next().next().next().attr("id");
-      curretUser = $(selID).parent().prev().prev().children(":first").text();
+      cont = $(selID).parent().parent().children(":first").text();
+      mod = $(selID).parent().parent().children(":nth-child(2)").text();
+      curretUser = $(selID).parent().prev().children(":first").text();
       count = $(selID).parent().parent().children(':nth-child(3)').text();
-      liveTime = $(selID).parent().prev().prev().children(":nth-child(2)").text();
+      liveTime = $(selID).parent().prev().children(":nth-child(2)").text();
       liveBuild = $(selID).parent().prev().prev().text();
       startInfo = {
         userName: $(selID).parent().children(":first").text(),
@@ -861,7 +897,7 @@ require_once("assets.php");
         userName: $(selID).parent().next().children(":first").text(),
         regTime: $(selID).parent().next().children(":nth-child(2)").text()
       }
-      if ($('#' + rowID1).children(":first").css("background-color") == 'rgb(0, 128, 0)') {
+      if ($('#' + rowID1).children(":first").css("background-color") == 'rgb(30, 184, 35)') {
         complete = "1";
       } else {
         complete = "0";
@@ -875,6 +911,8 @@ require_once("assets.php");
       }
       rowID1 = $(selID).parent().parent().attr("id");
       rowID2 = $('#' + rowID1).next().next().next().attr("id");
+      cont = $(selID).parent().parent().children(":first").text();
+      mod = $(selID).parent().parent().children(":nth-child(2)").text();
       count = $(selID).parent().parent().children(':nth-child(3)').text();
       curretUser = $(selID).parent().prev().prev().children(":first").text();
       liveTime = $(selID).parent().prev().prev().children(":nth-child(2)").text();
@@ -887,7 +925,7 @@ require_once("assets.php");
         userName: $(selID).prev().prev().text(),
         regTime: $(selID).prev().text(),
       }
-      if ($('#' + rowID1).children(":first").css("background-color") == 'rgb(0, 128, 0)') {
+      if ($('#' + rowID1).children(":first").css("background-color") == 'rgb(30, 184, 35)') {
         complete = "1";
       } else {
         complete = "0";
@@ -901,6 +939,8 @@ require_once("assets.php");
       }
       rowID1 = $(selID).parent().parent().attr("id");
       rowID2 = $('#' + rowID1).next().next().next().attr("id");
+      cont = $(selID).parent().parent().children(":first").text();
+      mod = $(selID).parent().parent().children(":nth-child(2)").text();
       count = $(selID).parent().parent().children(':nth-child(3)').text();
       curretUser = $(selID).prev().prev().text();
       liveTime = $(selID).prev().text();
@@ -913,7 +953,7 @@ require_once("assets.php");
         userName: $(selID).parent().next().next().children(":first").text(),
         regTime: $(selID).parent().next().next().children(":nth-child(2)").text()
       }
-      if ($('#' + rowID1).children(":first").css("background-color") == 'rgb(0, 128, 0)') {
+      if ($('#' + rowID1).children(":first").css("background-color") == 'rgb(30, 184, 35)') {
         complete = "1";
       } else {
         complete = "0";
@@ -923,7 +963,7 @@ require_once("assets.php");
       rowID1 = $(selID).attr("id");
       rowID2 = $('#' + rowID1).next().next().next().attr("id");
       count = $(selID).children(':nth-child(3)').text();
-      if ($('#' + rowID1).children(":first").css("background-color") == 'rgb(0, 128, 0)') {
+      if ($('#' + rowID1).children(":first").css("background-color") == 'rgb(30, 184, 35)') {
         complete = "1";
       } else {
         complete = "0";
@@ -960,6 +1000,8 @@ require_once("assets.php");
 
     if (rowID1) {
       let data = {
+        cont: cont,
+        mod: mod,
         firstID: rowID1,
         secondID: rowID2 ? rowID2 : "",
         currentUser: curretUser,
@@ -976,8 +1018,8 @@ require_once("assets.php");
   }
 
   function activeStartBox(id) {
-    $('#' + id).parent().prev().css('background-color', 'green');
-    7
+    $('#' + id).parent().prev().css('background-color', '#1EB823');
+    $('#' + id).parent().prev().css('color', 'white');
   }
 
   function activeRow(row, table) {
@@ -1039,14 +1081,14 @@ require_once("assets.php");
         liveVal = JSON.parse(data)[0];
         // var dayLastID = '';
         // for (let i = 0; i < ($('#dayShiftTB tr').length - 1); i++) {
-        //   if (i % 2 == 0 && $('tr[dayrowid="' + i + '"]').children(':first').css('background-color') == 'rgb(0, 128, 0)' && Number($('tr[dayrowid="' + i + '"]').children(':nth-child(4)').text()) && !Number($('tr[dayrowid="' + (i + 2) + '"]').children(':nth-child(4)').text()))
+        //   if (i % 2 == 0 && $('tr[dayrowid="' + i + '"]').children(':first').css('background-color') == 'rgb(30, 184, 35)' && Number($('tr[dayrowid="' + i + '"]').children(':nth-child(4)').text()) && !Number($('tr[dayrowid="' + (i + 2) + '"]').children(':nth-child(4)').text()))
         //     dayLastID = i + 2;
         // }
         // if (Number(dayLastID))
         //   $('tr[dayrowid="' + dayLastID + '"]').children(':nth-child(4)').html(liveVal);
         // var nightLastID = '';
         // for (let i = 0; i < ($('#nightShiftTB tr').length - 1); i++) {
-        //   if (i % 2 == 0 && $('tr[nightrowid="' + i + '"]').children(':first').css('background-color') == 'rgb(0, 128, 0)' && $('tr[nightrowid="' + i + '"]').children(':nth-child(4)').text() && !$('tr[nightrowid="' + (i + 2) + '"]').children(':nth-child(4)').text())
+        //   if (i % 2 == 0 && $('tr[nightrowid="' + i + '"]').children(':first').css('background-color') == 'rgb(30, 184, 35)' && $('tr[nightrowid="' + i + '"]').children(':nth-child(4)').text() && !$('tr[nightrowid="' + (i + 2) + '"]').children(':nth-child(4)').text())
         //     nightLastID = i + 2;
         // }
         // if (Number(nightLastID))
