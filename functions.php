@@ -1050,16 +1050,18 @@ function read_stock_level()
             $stock += (int)$rowItem->No_box;
         }
 
-        if ($stock < $row->min) {
-            $minContent = $minContent . "<div class='low-item'>
-                                    <h2>{$row->Kanban}</h2>
-                                    <h2>{$stock}/{$row->min}</h2>
-                                </div>";
-        } else if ($stock > $row->max) {
-            $maxContent = $maxContent . "<div class='low-item'>
-                                    <h2>{$row->Kanban}</h2>
-                                    <h2>{$stock}/{$row->max}</h2>
-                                </div>";
+        if ($row->min != 0 && $row->max != 0) {
+            if ($stock < $row->min) {
+                $minContent = $minContent . "<div class='low-item'>
+                                        <h2>{$row->Kanban}</h2>
+                                        <h2>{$stock}/{$row->min}</h2>
+                                    </div>";
+            } else if ($stock > $row->max) {
+                $maxContent = $maxContent . "<div class='low-item'>
+                                        <h2>{$row->Kanban}</h2>
+                                        <h2>{$stock}/{$row->max}</h2>
+                                    </div>";
+            }
         }
     }
     $arr = array(
