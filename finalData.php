@@ -16,7 +16,8 @@ $sql_table = "CREATE TABLE IF NOT EXISTS " . $tblFinalData . "(
     startNm VARCHAR(10),
     startTime VARCHAR(15),
     finishNm VARCHAR(10),
-    finishTime VARCHAR(15)
+    finishTime VARCHAR(15),
+    complete Boolean
   )";
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -32,17 +33,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $currentUser   =    $data["currentUser"];
   $firstID       =    $data["firstID"];
   $secondID      =    $data["secondID"];
-  $count         =    $data["count"];
+  $count         =    (int)$data["count"];
   $liveTime      =    $data["liveTime"];
   $liveBuild     =    (int)$data["liveBuild"];
   $startID       =    $data["startInfo"]["userName"];
   $startTime     =    $data["startInfo"]["regTime"];
   $finishID      =    $data["finishInfo"]["userName"];
   $finishTime    =    $data["finishInfo"]["regTime"];
+  $complete    =      (int)$data["complete"];
 
   $sql_select = "SELECT * FROM final_data WHERE  userNm = '" . $currentUser . "' AND firstID = '" . $firstID . "' AND secondID = '" . $secondID . "'";
-  $sql_insert = "INSERT INTO final_data(userNm, firstID, secondID, count, liveTime, liveBuild, startNm, startTime, finishNm, finishTime) VALUES ('" . $currentUser . "','" . $firstID . "', '" . $secondID . "', '" . $count . "', '" . $liveTime . "', '" . $liveBuild . "', '" . $startID . "', '" . $startTime . "', '" . $finishID . "', '" . $finishTime . "')";
-  $sql_update = "UPDATE final_data SET count= " . $count . ", liveTime = '" . $liveTime . "', liveBuild = '" . $liveBuild . "', startNm = '" . $startID . "', startTime = '" . $startTime . "',finishNm = '" . $finishID . "', finishTime = '" . $finishTime . "'  WHERE  userNm = '" . $currentUser . "' AND firstID = '" . $firstID . "' AND secondID = '" . $secondID . "'";
+  $sql_insert = "INSERT INTO final_data(userNm, firstID, secondID, count, liveTime, liveBuild, startNm, startTime, finishNm, finishTime,complete) VALUES ('" . $currentUser . "','" . $firstID . "', '" . $secondID . "', '" . $count . "', '" . $liveTime . "', '" . $liveBuild . "', '" . $startID . "', '" . $startTime . "', '" . $finishID . "', '" . $finishTime . "','" . $complete . "')";
+  $sql_update = "UPDATE final_data SET count= " . $count . ", liveTime = '" . $liveTime . "', liveBuild = '" . $liveBuild . "', startNm = '" . $startID . "', startTime = '" . $startTime . "',finishNm = '" . $finishID . "', finishTime = '" . $finishTime . "', complete = '" . $complete . "'  WHERE  userNm = '" . $currentUser . "' AND firstID = '" . $firstID . "' AND secondID = '" . $secondID . "'";
 
   if ($db->query($sql_select) && mysqli_num_rows($db->query($sql_select)) > 0) {
     if ($result = $db->query($sql_update)) {

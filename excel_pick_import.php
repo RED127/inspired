@@ -124,7 +124,7 @@ if (0 < $_FILES['file']['error']) {
                     }
                 }
             }
-            
+
             // ========================
 
             for ($row = 2; $row <= $total_rows; ++$row) {

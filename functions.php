@@ -4597,20 +4597,26 @@ function read_excel($post_data)
             <td id='dayConID_" . $tmpArr[$i * 2]['id'] . "'>" . $tmpArr[$i * 2]["Container"] . "</td>
             <td id='dayModID_" . $tmpArr[$i * 2]['id'] . "'>" . $tmpArr[$i * 2]["Module"] . "</td>
             <td id='day_counter_" . $tmpArr[$i * 2]['id'] . "' style='padding:unset;'></td><td rowspan='2' id='dayLive_" . $tmpArr[$i]['id'] . "' opt='dayLive'></td>
-            <td rowspan='2'  id='dayLoad_" . $tmpArr[$i]['id'] . "' style='padding:2px;'></td>
+            <td rowspan='2'  id='dayLoad_" . $tmpArr[$i]['id'] . "' style='padding:2px;'>
+                <div id='dayLCUser_" . ($i + 1) . "' name='dayLCUser'></div>
+                <div id='dayLCTime_" . ($i + 1) . "' name='dayLCTime'></div>    
+                <select disabled name='Day Load Confirm' id='dayLCSel_" . ($i + 1) . "' onchange='selectDayLC(" . ($i + 1) . ")' class='form-control'>
+                    <option disabled selected value=''>Select User</option>
+                </select>
+            </td>
             <td rowspan='2' name='dayStWork'>
-            <div id='dayStUser_" . ($i + 1) . "' id='startUser'></div>
-            <div id='dayStTime_" . ($i + 1) . "'  id='startTime'></div>
-            <select disabled name='Fill Start' id='dayStSel_" . ($i + 1) . "' onchange='selectDayStName(" . ($i + 1) . ")' class='form-control'>
-                <option disabled selected value=''>Select User</option>
-            </select>
+                <div id='dayStUser_" . ($i + 1) . "' id='startUser'></div>
+                <div id='dayStTime_" . ($i + 1) . "'  id='startTime'></div>
+                <select disabled name='Fill Start' id='dayStSel_" . ($i + 1) . "' onchange='selectDayStName(" . ($i + 1) . ")' class='form-control'>
+                    <option disabled selected value=''>Select User</option>
+                </select>
             </td>
             <td rowspan='2' name='dayFnWork'>
-            <div id='dayFnUser_" . ($i + 1) . "' name='dayFnUser'></div>
-            <div id='dayFnTime_" . ($i + 1) . "' name='dayFnTime'></div>
-            <select disabled name='Day Finish' id='dayFnSel_" . ($i + 1) . "' onchange='selectDayFnName(" . ($i + 1) . ")' class='form-control'>
-                <option disabled selected value=''>Select User</option>
-            </select>
+                <div id='dayFnUser_" . ($i + 1) . "' name='dayFnUser'></div>
+                <div id='dayFnTime_" . ($i + 1) . "' name='dayFnTime'></div>
+                <select disabled name='Day Finish' id='dayFnSel_" . ($i + 1) . "' onchange='selectDayFnName(" . ($i + 1) . ")' class='form-control'>
+                    <option disabled selected value=''>Select User</option>
+                </select>
             </td>
             </tr>";
             }
@@ -4650,7 +4656,13 @@ function read_excel($post_data)
             <td id='nightConID_" . $tmpArr[$i * 2]['id'] . "'>" . $tmpArr[$i * 2]["Container"] . "</td>
             <td id='nightModID_" . $tmpArr[$i * 2]['id'] . "'>" . $tmpArr[$i * 2]["Module"] . "</td>
             <td id='night_counter_" . $tmpArr[$i * 2]['id'] . "' style='padding:unset;'></td><td rowspan='2' id='nightLive_" . $tmpArr[$i]['id'] . "' opt='nightLive'></td>
-            <td rowspan='2' id='nightLoad_" . $tmpArr[$i]['id'] . "' style='padding:2px;'></td>
+            <td rowspan='2' id='nightLoad_" . $tmpArr[$i]['id'] . "' style='padding:2px;'>
+                <div id='nightLCUser_" . ($i + 1) . "' name='nightLCUser'></div>
+                <div id='nightLCTime_" . ($i + 1) . "' name='nightLCTime'></div>    
+                <select disabled name='Night Load Confirm' id='nightLCSel_" . ($i + 1) . "' onchange='selectNightLC(" . ($i + 1) . ")' class='form-control'>
+                    <option disabled selected value=''>Select User</option>
+                </select>
+            </td>
             <td rowspan='2' name='nightStWork'>
                 <div id='nightStUser_" . ($i + 1) . "' name='nightStUser'></div>
                 <div id='nightStTime_" . ($i + 1) . "' name='nightStTime'></div>
