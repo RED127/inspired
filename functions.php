@@ -1057,7 +1057,7 @@ function read_stock_level()
                                         <h2>{$stock}/{$row->min}</h2>
                                     </div>";
             } else if ($stock > $row->max) {
-                $maxContent = $maxContent . "<div class='low-item'>
+                $maxContent = $maxContent . "<div class='high-item'>
                                         <h2>{$row->Kanban}</h2>
                                         <h2>{$stock}/{$row->max}</h2>
                                     </div>";
