@@ -7,6 +7,7 @@ $week_start = date('Y-m-d', strtotime("this week"));
 $week_end = date('Y-m-d', strtotime("+6 days", strtotime($week_start)));
 ?>
 <link rel="stylesheet" href="assets/css/bootstrap-datetimepicker.min.css">
+<link rel="stylesheet" href="assets/css/base.css">
 <!-- DataTables -->
 <link rel="stylesheet" href="plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
 <link rel="stylesheet" href="plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
@@ -71,8 +72,8 @@ $week_end = date('Y-m-d', strtotime("+6 days", strtotime($week_start)));
                             <div class="col-sm-12" style="text-transform: uppercase; text-align:center;">
                                 <h2 class="m-0" style="display: inline">LOW</h2>
                             </div>
-                            <div class="col-sm-9" style="text-transform: uppercase; text-align:center;background-color:#efa3a3;padding:5%;">
-                                <h3 class="m-0" style="display: inline">LOW OVERVIEW TOTAL: <span id="low_count"></span></h3>
+                            <div class="col-sm-9" style="text-transform: uppercase; text-align:center;background-color:#efa3a3;padding:5%;float:right;">
+                                <h3 class="m-0" style="display: inline">LOW OVERVIEW TOTAL: <span id="low_count">0</span></h3>
                             </div>
                             <div id="low_content" class="row col-sm-12">
                             </div>
@@ -83,6 +84,50 @@ $week_end = date('Y-m-d', strtotime("+6 days", strtotime($week_start)));
         </div>
         <!-- /.content-wrapper -->
         <?php include("footer.php"); ?>
+
+        <!-- Modal -->
+        <div class="modal fade" id="kanban_detail_modal">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">STOCKING LEVEL</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-4 col-sm-12 d-flex justify-content-center align-items-end">
+                                <h2>I&nbsp;&nbsp;N</h2>
+                            </div>
+                            <div class="col-md-4 col-sm-12">
+                                <div class="bg-danger text-align">
+                                    <h2 id="modal_kanban"></h2>
+                                    <h2 id="modal_stock"></h2>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-sm-12 d-flex justify-content-center align-items-end">
+                                <h2>O&nbsp;U&nbsp;T</h2>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-12 col-md-12" style="border-right:1px solid;">
+                                <div class="row">
+
+                                </div>
+                            </div>
+                            <div class="col-sm-12 col-md-12">
+                                <div class="row">
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer justify-content-center">
+                        <button type="button" class="btn btn-success" data-dismiss="modal" style="width: 160px;">OK</button>
+                    </div>
+                </div>
+                <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+        </div>
     </div>
 
     <!-- REQUIRED SCRIPTS -->
@@ -127,9 +172,17 @@ $week_end = date('Y-m-d', strtotime("+6 days", strtotime($week_start)));
                     $('#high_content').html(res.max);
                     $('#high_count').html(res.max.split('<div').length - 1);
                 });
+
             }
 
         });
+
+        function kanban_detail(kanban, stock) {
+            console.log(kanban, stock);
+            $('#modal_kanban').html(kanban);
+            $('#modal_stock').html(stock);
+            $('#kanban_detail_modal').modal();
+        }
     </script>
 </body>
 

@@ -125,6 +125,12 @@
                     </a>
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
+                            <a href="stocking_kanban.php" class="nav-link <?php echo ($page_name == 'Stocking Kanban') ? 'active' : ''; ?>">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Kanban</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
                             <a href="system_fill_main.php" class="nav-link <?php echo ($page_name == 'System Fill Main') ? 'active' : ''; ?>">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Main</p>
@@ -140,12 +146,6 @@
                             <a href="system_fill_andon.php" class="nav-link <?php echo ($page_name == 'System Fill Andon') ? 'active' : ''; ?>">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Andon</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="stocking_kanban.php" class="nav-link <?php echo ($page_name == 'Stocking Kanban') ? 'active' : ''; ?>">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Kanban</p>
                             </a>
                         </li>
                     </ul>

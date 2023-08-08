@@ -988,6 +988,9 @@ function read_history($post_data)
 function read_kanban_list()
 {
     global $db;
+    $updateQuery = "UPDATE `excel_pick_list` JOIN `final_data` ON `excel_pick_list`.Container = `final_data`.Container SET `excel_pick_list`.is_complete = `final_data`.complete WHERE `excel_pick_list`.Module = `final_data`.Module";
+    $db->query($updateQuery);
+
     $query = "SELECT * FROM `excel_pick_list` GROUP BY Kanban";
     $result = $db->query($query);
     echo '<table id="kanban_table" class="table table-bordered table-striped dataTable dtr-inline">';
@@ -1000,7 +1003,7 @@ function read_kanban_list()
     echo '</thead>';
     echo '<tbody>';
     while ($row = mysqli_fetch_object($result)) {
-        $itemQuery = "SELECT * FROM `excel_pick_list` WHERE Kanban = '" . $row->Kanban . "'";
+        $itemQuery = "SELECT * FROM `excel_pick_list` WHERE Kanban = '" . $row->Kanban . "' AND is_complete = 1";
         $kanbanQuery = "SELECT * FROM `part_to_kanban` WHERE Kanban = '" . $row->Kanban . "'";
         $itemResult = $db->query($itemQuery);
         $kanbanResult = $db->query($kanbanQuery);
@@ -1014,8 +1017,8 @@ function read_kanban_list()
 
         if (mysqli_num_rows($kanbanResult) > 0) {
             $obj = mysqli_fetch_object($kanbanResult);
-            $max = $obj->max;
-            $min = $obj->min;
+            $max = $obj->max > 0 ? $obj->max : "";
+            $min = $obj->min > 0 ? $obj->min : "";
         }
 
         echo '<tr>';
@@ -1051,13 +1054,15 @@ function read_stock_level()
         }
 
         if ($row->min != 0 && $row->max != 0) {
+            $Container = trim($row->Container);
+            $Module = trim($row->Module);
             if ($stock < $row->min) {
-                $minContent = $minContent . "<div class='low-item'>
+                $minContent = $minContent . "<div class='low-item' onclick=kanban_detail('{$row->Kanban}','{$stock}/{$row->min}')>
                                         <h2>{$row->Kanban}</h2>
                                         <h2>{$stock}/{$row->min}</h2>
                                     </div>";
             } else if ($stock > $row->max) {
-                $maxContent = $maxContent . "<div class='high-item'>
+                $maxContent = $maxContent . "<div class='high-item' onclick=kanban_detail('{$row->Kanban}','{$stock}/{$row->min}')>
                                         <h2>{$row->Kanban}</h2>
                                         <h2>{$stock}/{$row->max}</h2>
                                     </div>";

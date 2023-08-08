@@ -55,3 +55,5 @@ $STOCKING_AREAS = array(
     'Part Stocking',
     'Free Location'
 );
+
+$websocketKey = "eYiAbBPGoDi2mtsi3OQme5M7GIRAFDUz";

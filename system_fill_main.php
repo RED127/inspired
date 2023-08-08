@@ -725,7 +725,6 @@ require_once("assets.php");
         url: "finalData.php",
         type: "GET",
         success: (data) => {
-          // console.log("this is saved data-->", JSON.parse(data));
           if (data.length > 0) {
             var len = 0;
             JSON.parse(data).forEach(function(item) {
@@ -1031,15 +1030,27 @@ require_once("assets.php");
     // Select Row
     const selectedRow = 2 * row - 1;
     if (table == 'day') {
-      $("tr[dayrowid='" + (selectedRow - 1) + "']").css('border-width', '5px 5px 0 5px');
-      $("tr[dayrowid='" + (selectedRow - 1) + "']").css('border-color', 'orange');
-      $("tr[dayrowid='" + selectedRow + "']").css('border-width', '0 5px 5px 5px');
-      $("tr[dayrowid='" + selectedRow + "']").css('border-color', 'orange');
+      var secondID = $("tr[dayrowid='" + (selectedRow - 1) + "']").next().next().next().attr('id');
+      if (secondID) {
+        $("tr[dayrowid='" + (selectedRow - 1) + "']").css('border-width', '5px 5px 0 5px');
+        $("tr[dayrowid='" + (selectedRow - 1) + "']").css('border-color', 'orange');
+        $("tr[dayrowid='" + selectedRow + "']").css('border-width', '0 5px 5px 5px');
+        $("tr[dayrowid='" + selectedRow + "']").css('border-color', 'orange');
+      } else {
+        $("tr[dayrowid='" + (selectedRow - 1) + "']").css('border-width', '5px 5px 5px 5px');
+        $("tr[dayrowid='" + (selectedRow - 1) + "']").css('border-color', 'orange');
+      }
     } else {
-      $("tr[nightrowid='" + (selectedRow - 1) + "']").css('border-width', '5px 5px 0 5px');
-      $("tr[nightrowid='" + (selectedRow - 1) + "']").css('border-color', 'orange');
-      $("tr[nightrowid='" + selectedRow + "']").css('border-width', '0 5px 5px 5px');
-      $("tr[nightrowid='" + selectedRow + "']").css('border-color', 'orange');
+      var secondID = $("tr[nightrowid='" + (selectedRow - 1) + "']").next().next().next().attr('id');
+      if (secondID) {
+        $("tr[nightrowid='" + (selectedRow - 1) + "']").css('border-width', '5px 5px 0 5px');
+        $("tr[nightrowid='" + (selectedRow - 1) + "']").css('border-color', 'orange');
+        $("tr[nightrowid='" + selectedRow + "']").css('border-width', '0 5px 5px 5px');
+        $("tr[nightrowid='" + selectedRow + "']").css('border-color', 'orange');
+      } else {
+        $("tr[nightrowid='" + (selectedRow - 1) + "']").css('border-width', '5px 5px 5px 5px');
+        $("tr[nightrowid='" + (selectedRow - 1) + "']").css('border-color', 'orange');
+      }
     }
   }
 
@@ -1189,7 +1200,12 @@ require_once("assets.php");
   getLiveVal();
   setInterval(function() {
     getLiveVal();
-  }, 30000)
+  }, 30000);
+
+  setInterval(function() {
+    read_excel_data();
+    finalData();
+  }, 2000);
 </script>
 
 </html>
