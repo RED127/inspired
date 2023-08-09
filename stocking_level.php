@@ -19,6 +19,7 @@ $week_end = date('Y-m-d', strtotime("+6 days", strtotime($week_start)));
     }
 
     .low-item {
+        cursor:pointer;
         text-align: center;
         background: #efa3a3;
         padding: 10px 0 5px 0;
@@ -32,6 +33,7 @@ $week_end = date('Y-m-d', strtotime("+6 days", strtotime($week_start)));
     }
 
     .high-item {
+        cursor:pointer;
         text-align: center;
         background: #d5efa7;
         padding: 10px 0 5px 0;
@@ -87,7 +89,7 @@ $week_end = date('Y-m-d', strtotime("+6 days", strtotime($week_start)));
 
         <!-- Modal -->
         <div class="modal fade" id="kanban_detail_modal">
-            <div class="modal-dialog">
+            <div class="modal-dialog" style="max-width: 1000px;">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h4 class="modal-title">STOCKING LEVEL</h4>
@@ -107,19 +109,45 @@ $week_end = date('Y-m-d', strtotime("+6 days", strtotime($week_start)));
                                 <h2>O&nbsp;U&nbsp;T</h2>
                             </div>
                         </div>
+                        <br />
+                        <br />
                         <div class="row">
-                            <div class="col-sm-12 col-md-12" style="border-right:1px solid;">
+                            <div class="col-sm-12 col-md-6" style="border-right:1px solid;">
                                 <div class="row">
-
+                                    <div class="col-sm-12 col-md-4 text-align">
+                                        <h4>TIME / DATE</h4>
+                                        <h4 id="in_time"></h4>
+                                    </div>
+                                    <div class="col-sm-12 col-md-4 text-align">
+                                        <h4>MEMBER</h4>
+                                        <h4 id="in_member"></h4>
+                                    </div>
+                                    <div class="col-sm-12 col-md-4 text-align">
+                                        <h4>QTY</h4>
+                                        <h4 id="in_stock"></h4>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="col-sm-12 col-md-12">
+                            <div class="col-sm-12 col-md-6">
                                 <div class="row">
-
+                                    <div class="col-sm-12 col-md-4 text-align">
+                                        <h4>TIME / DATE</h4>
+                                        <h4 id="out_time"></h4>
+                                    </div>
+                                    <div class="col-sm-12 col-md-4 text-align">
+                                        <h4>MEMBER</h4>
+                                        <h4 id="out_member"></h4>
+                                    </div>
+                                    <div class="col-sm-12 col-md-4 text-align">
+                                        <h4>QTY</h4>
+                                        <h4 id="out_stock"></h4>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
+                    <br />
+                    <br />
                     <div class="modal-footer justify-content-center">
                         <button type="button" class="btn btn-success" data-dismiss="modal" style="width: 160px;">OK</button>
                     </div>
@@ -177,10 +205,15 @@ $week_end = date('Y-m-d', strtotime("+6 days", strtotime($week_start)));
 
         });
 
-        function kanban_detail(kanban, stock) {
-            console.log(kanban, stock);
+        function kanban_detail(kanban, stock, member, time, outM, outT, outS) {
             $('#modal_kanban').html(kanban);
             $('#modal_stock').html(stock);
+            $('#in_time').html(time);
+            $('#in_member').html(member);
+            $('#out_time').html(outT);
+            $('#out_member').html(outM);
+            $('#out_stock').html(outS);
+            $('#in_stock').html(stock.split('/')[0]);
             $('#kanban_detail_modal').modal();
         }
     </script>

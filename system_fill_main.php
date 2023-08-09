@@ -143,6 +143,7 @@ require_once("assets.php");
 <!-- AdminLTE App -->
 <script src="assets/js/adminlte.min.js"></script>
 <script src="assets/js/custom.js"></script>
+<script src="assets/js/websocket.js"></script>
 
 <body class="hold-transition sidebar-collapse layout-top-nav" onload="startTime()">
   <div class="wrapper">
@@ -861,6 +862,10 @@ require_once("assets.php");
           data: data
         },
         success: () => {
+          websocket.send(JSON.stringify({
+            type:"update",
+            message:"save"
+          }));
           console.log("Data is saved successfully.");
         }
       })
@@ -1202,10 +1207,11 @@ require_once("assets.php");
     getLiveVal();
   }, 30000);
 
-  setInterval(function() {
-    read_excel_data();
-    finalData();
-  }, 2000);
+  // setInterval(function() {
+  //   var selected = $('#date_picker').val().split("-");
+  //   read_excel_data(selected[2] + "-" + selected[1] + "-" + selected[0]);
+  //   finalData();
+  // }, 2000);
 </script>
 
 </html>

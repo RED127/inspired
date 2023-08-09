@@ -1015,6 +1015,15 @@ function read_kanban_list()
             $stock += (int)$rowItem->No_box;
         }
 
+        $deliveryQuery = "SELECT * FROM `conveyance_picks` WHERE kanban = '{$row->Kanban}' AND is_delivered = 1";
+        $deliveryResult = $db->query($deliveryQuery);
+        $deliveryCount = mysqli_num_rows($deliveryResult);
+        $stock = $stock - $deliveryCount;
+
+        if($stock < 0){
+            $stock = 0;
+        }
+
         if (mysqli_num_rows($kanbanResult) > 0) {
             $obj = mysqli_fetch_object($kanbanResult);
             $max = $obj->max > 0 ? $obj->max : "";
@@ -1040,7 +1049,8 @@ function read_stock_level()
     $updateQuery = "UPDATE `excel_pick_list` JOIN `final_data` ON `excel_pick_list`.Container = `final_data`.Container SET `excel_pick_list`.is_complete = `final_data`.complete WHERE `excel_pick_list`.Module = `final_data`.Module";
     $db->query($updateQuery);
 
-    $query = "SELECT a.*, b.* FROM `excel_pick_list` AS a LEFT JOIN `part_to_kanban` AS b ON a.`Kanban` = b.`kanban` WHERE (a.`No_box` < b.`min` OR a.`No_box` > b.`max`) AND a.`is_complete` = 1 GROUP BY a.`Kanban`";
+    // $query = "SELECT a.*, b.* FROM `excel_pick_list` AS a LEFT JOIN `part_to_kanban` AS b ON a.`Kanban` = b.`kanban` WHERE (a.`No_box` < b.`min` OR a.`No_box` > b.`max`) AND a.`is_complete` = 1 GROUP BY a.`Kanban`";
+    $query = "SELECT a.*, b.*,c.* FROM `excel_pick_list` AS a LEFT JOIN `part_to_kanban` AS b ON a.`Kanban` = b.`kanban` LEFT JOIN `final_data` AS c ON a.`Container` = c.`container` WHERE a.`Module` = c.`module` AND (a.`No_box` < b.`min` OR a.`No_box` > b.`max`) AND a.`is_complete` = 1 GROUP BY a.`Kanban`";
     $result = $db->query($query);
     $minContent = "";
     $maxContent = "";
@@ -1053,16 +1063,23 @@ function read_stock_level()
             $stock += (int)$rowItem->No_box;
         }
 
+        $deliveryQuery = "SELECT * FROM `conveyance_picks` WHERE kanban = '{$row->Kanban}' AND is_delivered = 1";
+        $deliveryResult = $db->query($deliveryQuery);
+        $deliveryCount = mysqli_num_rows($deliveryResult);
+        $stock = $stock - $deliveryCount;
+        $deliveryResult = mysqli_fetch_object($deliveryResult);
         if ($row->min != 0 && $row->max != 0) {
-            $Container = trim($row->Container);
-            $Module = trim($row->Module);
+            $inName = str_replace(' ', '&nbsp;', $row->finishNm);
+            $inTime = str_replace(' ', '&nbsp;', $row->finishTime);
+            $outName = str_replace(' ', '&nbsp;', $deliveryResult->delivered_user);
+            $outTime = str_replace(' ', '&nbsp;', $deliveryResult->deliveried_at);
             if ($stock < $row->min) {
-                $minContent = $minContent . "<div class='low-item' onclick=kanban_detail('{$row->Kanban}','{$stock}/{$row->min}')>
+                $minContent = $minContent . "<div class='low-item' onclick=kanban_detail('{$row->Kanban}','{$stock}/{$row->min}','{$inName}','{$inTime}','{$outName}','{$outTime}','{$deliveryCount}')>
                                         <h2>{$row->Kanban}</h2>
                                         <h2>{$stock}/{$row->min}</h2>
                                     </div>";
             } else if ($stock > $row->max) {
-                $maxContent = $maxContent . "<div class='high-item' onclick=kanban_detail('{$row->Kanban}','{$stock}/{$row->min}')>
+                $maxContent = $maxContent . "<div class='high-item' onclick=kanban_detail('{$row->Kanban}','{$stock}/{$row->min}','{$inName}','{$inTime}','{$outName}','{$outTime}','{$deliveryCount}')>
                                         <h2>{$row->Kanban}</h2>
                                         <h2>{$stock}/{$row->max}</h2>
                                     </div>";
@@ -3303,7 +3320,7 @@ function check_pick_finish($post_data)
     $result1 = mysqli_fetch_object($db->query($query1));
     $max_cycle = $result1->max_cycle;
     $status = $post_data['status'];
-    var_dump($post_data['zone']);
+
     if ($status == 'pick') {
         if ($post_data['cycle'] == -1)
             $query = "SELECT * FROM {$tblConveyancePicks} WHERE is_completed = 0 AND kanban_date = '{$pick_date}'";
@@ -3617,12 +3634,13 @@ function conveyance_delivery($post_data)
 {
     global $tblConveyancePicks, $db, $current;
     $kanban_id = $post_data['kanban_id'];
+    $user = $_SESSION['user']['user_id'];
     if (isset($post_data['reason']))
         $reason = $post_data['reason'];
     else
         $reason = 0;
     if ($kanban_id) {
-        $query = "UPDATE {$tblConveyancePicks} SET is_delivered = 1, deliveried_at ='{$current}', delivered_reason = {$reason} WHERE id = {$kanban_id}";
+        $query = "UPDATE {$tblConveyancePicks} SET deliveried_user = '{$user}', is_delivered = 1, deliveried_at ='{$current}', delivered_reason = {$reason} WHERE id = {$kanban_id}";
         $result = $db->query($query);
         if ($result)
             echo 'ok';
