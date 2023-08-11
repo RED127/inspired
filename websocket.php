@@ -48,12 +48,11 @@ while (true) {
 		while ($bytes >= 1) {
 			$received_text = unmask($buf); //unmask data
 			$tst_msg = json_decode($received_text, true); //json decode 
-            echo $tst_msg;
 			$type = $tst_msg['type']; //message text
 			$msg = $tst_msg['message']; //message text
 
 			//prepare data to be sent to client
-			$response_text = mask(json_encode(array('type' => $type,'message' => $msg)));
+			$response_text = mask(json_encode(array('type' => $type, 'message' => $msg)));
 			send_message($response_text); //send data
 			break 2; //exist this loop
 		}
