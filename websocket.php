@@ -1,5 +1,5 @@
 <?php
-$host = 'wss://spsonline.co.uk/test/'; //host
+$host = '0.0.0.0'; //host
 $port = '2003'; //port
 $null = NULL; //null var
 

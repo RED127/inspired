@@ -1020,7 +1020,7 @@ function read_kanban_list()
         $deliveryCount = mysqli_num_rows($deliveryResult);
         $stock = $stock - $deliveryCount;
 
-        if($stock < 0){
+        if ($stock < 0) {
             $stock = 0;
         }
 
@@ -1071,15 +1071,15 @@ function read_stock_level()
         if ($row->min != 0 && $row->max != 0) {
             $inName = str_replace(' ', '&nbsp;', $row->finishNm);
             $inTime = str_replace(' ', '&nbsp;', $row->finishTime);
-            $outName = str_replace(' ', '&nbsp;', $deliveryResult->delivered_user);
-            $outTime = str_replace(' ', '&nbsp;', $deliveryResult->deliveried_at);
+            $outName = str_replace(' ', '&nbsp;', isset($deliveryResult) ? $deliveryResult->delivered_user : "");
+            $outTime = str_replace(' ', '&nbsp;', isset($deliveryResult) ? $deliveryResult->deliveried_at : "");
             if ($stock < $row->min) {
                 $minContent = $minContent . "<div class='low-item' onclick=kanban_detail('{$row->Kanban}','{$stock}/{$row->min}','{$inName}','{$inTime}','{$outName}','{$outTime}','{$deliveryCount}')>
                                         <h2>{$row->Kanban}</h2>
                                         <h2>{$stock}/{$row->min}</h2>
                                     </div>";
             } else if ($stock > $row->max) {
-                $maxContent = $maxContent . "<div class='high-item' onclick=kanban_detail('{$row->Kanban}','{$stock}/{$row->min}','{$inName}','{$inTime}','{$outName}','{$outTime}','{$deliveryCount}')>
+                $maxContent = $maxContent . "<div class='high-item' onclick=kanban_detail('{$row->Kanban}','{$stock}/{$row->max}','{$inName}','{$inTime}','{$outName}','{$outTime}','{$deliveryCount}')>
                                         <h2>{$row->Kanban}</h2>
                                         <h2>{$stock}/{$row->max}</h2>
                                     </div>";

@@ -7,6 +7,7 @@ $week_start = date('Y-m-d', strtotime("this week"));
 $week_end = date('Y-m-d', strtotime("+6 days", strtotime($week_start)));
 ?>
 <link rel="stylesheet" href="assets/css/bootstrap-datetimepicker.min.css">
+<link rel="stylesheet" href="assets/css/base.css">
 <!-- DataTables -->
 <link rel="stylesheet" href="plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
 <link rel="stylesheet" href="plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
@@ -33,9 +34,8 @@ $week_end = date('Y-m-d', strtotime("+6 days", strtotime($week_start)));
                             <div class="card card-default">
                                 <!-- /.card-header -->
                                 <div class="card-body">
-                                    <div class="row">
-                                        <div class="col-md-12" id="kanban_list"></div>
-                                    </div>
+                                    <div class="loading"></div>
+                                    <div class="col-md-12" id="kanban_list"></div>
                                 </div>
                                 <!-- /.card-body -->
                             </div>
@@ -77,6 +77,7 @@ $week_end = date('Y-m-d', strtotime("+6 days", strtotime($week_start)));
             read_kanban_list();
 
             function read_kanban_list() {
+                $('.loading').css("display", "");
                 $.ajax({
                     url: "actions.php",
                     method: "post",
@@ -92,6 +93,7 @@ $week_end = date('Y-m-d', strtotime("+6 days", strtotime($week_start)));
                         "autoWidth": false,
                         "buttons": ["copy", "csv", "excel", "pdf", "print"],
                     }).buttons().container().appendTo('#kanban_table_wrapper .col-md-6:eq(0)');
+                    $('.loading').css("display", "none");
                 });
             }
 
