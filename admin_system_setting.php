@@ -233,7 +233,125 @@ require_once("assets.php");
               </div>
             </div>
             <!-- <div class="col-lg-4"></div> -->
-            <div class="col-lg-6">
+           
+            <div class="row col-lg-12">
+              <div class="col-lg-6">
+                <div class="card card-primary">
+                  <div class="card-header border-0">
+                    <div class="d-flex justify-content-between">
+                      <h3 class="card-title">
+                        Dolly Setting
+                      </h3>
+                    </div>
+                  </div>
+                  <div class="card-body">
+                    <table class="table table-bordered table-bordered" id="dolly_table">
+                      <thead>
+                        <tr>
+                          <th>Dolly Name</th>
+                          <th>Color</th>
+                          <th></th>
+                        </tr>
+                        <tr id="tr_dolly_0">
+                          <th>
+                            <input type="text" class="form-control" name="dolly_name">
+                          </th>
+                          <th>
+                            <div class="input-group dolly-colorpicker colorpicker-element" id="dolly_color_0">
+                              <input type="text" class="form-control" name="dolly_color" id="input_dolly_color_0" value="" data-original-title="" title="">
+                              <div class="input-group-append">
+                                <span class="input-group-text"><i class="fas fa-square"></i></span>
+                              </div>
+                            </div>
+                          </th>
+                          <th style="text-align: center;">
+                            <button type="button" class="btn btn-success add-dolly">Add</button>
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <?php
+                        $dolly = get_all_dolly();
+                        foreach ($dolly as $item) {
+                          echo '<tr id="tr_dolly_' . $item->id . '">';
+                          echo '<td><input type="text" class="form-control dolly-name" name="dolly_name" value="' . $item->name . '"></td>';
+                          echo '<td>';
+                          echo '<div class="input-group dolly-colorpicker colorpicker-element" id="dolly_color_' . $item->id . '">
+                                                  <input type="text" class="form-control" name="dolly_color" id="input_dolly_color_' . $item->id . '" value="' . $item->color . '" data-original-title="" title="">
+                                                  <div class="input-group-append">
+                                                      <span class="input-group-text"><i class="fas fa-square" style="color: ' . $item->color . '"></i></span>
+                                                  </div>
+                                              </div>';
+                          echo '</td>';
+                          echo '<td style="text-align: center;"><button type="button" class="btn btn-danger delete-dolly" value="' . $item->id . '">Delete</button></td>';
+                          echo '</tr>';
+                        }
+                        ?>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-lg-6">
+                <div class="card card-primary">
+                              <div class="card-header border-0">
+                                <div class="d-flex justify-content-between">
+                                  <h3 class="card-title">
+                                    Reason Setting
+                                  </h3>
+                                </div>
+                              </div>
+                              <div class="card-body">
+                                <table class="table table-bordered table-bordered" id="reason_table">
+                                  <thead>
+                                    <tr>
+                                      <th>Reason Name</th>
+                                      <th></th>
+                                    </tr>
+                                    <tr id="tr_reason_0">
+                                      <th>
+                                        <input type="text" class="form-control" name="reason_name">
+                                      </th>
+                                      <th style="text-align: center;">
+                                        <button type="button" class="btn btn-success add-reason">Add</button>
+                                      </th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    <?php
+                                    $reasons = get_all_reason();
+                                    foreach ($reasons as $item) {
+                                      echo '<tr id="tr_reason_' . $item->id . '">';
+                                      echo '<td>' . $item->name . '</td>';
+                                      echo '<td style="text-align: center;"><button type="button" class="btn btn-danger delete-reason" value="' . $item->id . '">Delete</button></td>';
+                                      echo '</tr>';
+                                    }
+                                    ?>
+                                  </tbody>
+                                </table>
+                              </div>
+                            </div>
+
+                            <div class="card card-primary">
+                              <div class="card-header border-0">
+                                <div class="d-flex justify-content-between">
+                                  <h3 class="card-title">
+                                    Tag Setting
+                                  </h3>
+                                </div>
+                              </div>
+                              <div class="card-body">
+                                <div class="row">
+                                  <p class="mx-2">Current Tag</p>
+                                  <input type="text" class="form-control" name="tag_value" id="tag_value" style="width: 200px; display: inline-block">
+                                  <button class="btn btn-success mx-2" id="save_tag">Save</button>
+                                </div>
+                              </div>
+                            </div>
+              </div>
+            </div>
+            <div class="col-lg-12">
               <div class="card card-primary">
                 <div class="card-header border-0">
                   <div class="d-flex justify-content-between">
@@ -303,119 +421,6 @@ require_once("assets.php");
                     </thead>
                     <tbody></tbody>
                   </table>
-                </div>
-              </div>
-            </div>
-            <div class="col-lg-6">
-              <div class="card card-primary">
-                <div class="card-header border-0">
-                  <div class="d-flex justify-content-between">
-                    <h3 class="card-title">
-                      Dolly Setting
-                    </h3>
-                  </div>
-                </div>
-                <div class="card-body">
-                  <table class="table table-bordered table-bordered" id="dolly_table">
-                    <thead>
-                      <tr>
-                        <th>Dolly Name</th>
-                        <th>Color</th>
-                        <th></th>
-                      </tr>
-                      <tr id="tr_dolly_0">
-                        <th>
-                          <input type="text" class="form-control" name="dolly_name">
-                        </th>
-                        <th>
-                          <div class="input-group dolly-colorpicker colorpicker-element" id="dolly_color_0">
-                            <input type="text" class="form-control" name="dolly_color" id="input_dolly_color_0" value="" data-original-title="" title="">
-                            <div class="input-group-append">
-                              <span class="input-group-text"><i class="fas fa-square"></i></span>
-                            </div>
-                          </div>
-                        </th>
-                        <th style="text-align: center;">
-                          <button type="button" class="btn btn-success add-dolly">Add</button>
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <?php
-                      $dolly = get_all_dolly();
-                      foreach ($dolly as $item) {
-                        echo '<tr id="tr_dolly_' . $item->id . '">';
-                        echo '<td><input type="text" class="form-control dolly-name" name="dolly_name" value="' . $item->name . '"></td>';
-                        echo '<td>';
-                        echo '<div class="input-group dolly-colorpicker colorpicker-element" id="dolly_color_' . $item->id . '">
-                                                <input type="text" class="form-control" name="dolly_color" id="input_dolly_color_' . $item->id . '" value="' . $item->color . '" data-original-title="" title="">
-                                                <div class="input-group-append">
-                                                    <span class="input-group-text"><i class="fas fa-square" style="color: ' . $item->color . '"></i></span>
-                                                </div>
-                                            </div>';
-                        echo '</td>';
-                        echo '<td style="text-align: center;"><button type="button" class="btn btn-danger delete-dolly" value="' . $item->id . '">Delete</button></td>';
-                        echo '</tr>';
-                      }
-                      ?>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-
-              <div class="card card-primary">
-                <div class="card-header border-0">
-                  <div class="d-flex justify-content-between">
-                    <h3 class="card-title">
-                      Reason Setting
-                    </h3>
-                  </div>
-                </div>
-                <div class="card-body">
-                  <table class="table table-bordered table-bordered" id="reason_table">
-                    <thead>
-                      <tr>
-                        <th>Reason Name</th>
-                        <th></th>
-                      </tr>
-                      <tr id="tr_reason_0">
-                        <th>
-                          <input type="text" class="form-control" name="reason_name">
-                        </th>
-                        <th style="text-align: center;">
-                          <button type="button" class="btn btn-success add-reason">Add</button>
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <?php
-                      $reasons = get_all_reason();
-                      foreach ($reasons as $item) {
-                        echo '<tr id="tr_reason_' . $item->id . '">';
-                        echo '<td>' . $item->name . '</td>';
-                        echo '<td style="text-align: center;"><button type="button" class="btn btn-danger delete-reason" value="' . $item->id . '">Delete</button></td>';
-                        echo '</tr>';
-                      }
-                      ?>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-
-              <div class="card card-primary">
-                <div class="card-header border-0">
-                  <div class="d-flex justify-content-between">
-                    <h3 class="card-title">
-                      Tag Setting
-                    </h3>
-                  </div>
-                </div>
-                <div class="card-body">
-                  <div class="row">
-                    <p class="mx-2">Current Tag</p>
-                    <input type="text" class="form-control" name="tag_value" id="tag_value" style="width: 200px; display: inline-block">
-                    <button class="btn btn-success mx-2" id="save_tag">Save</button>
-                  </div>
                 </div>
               </div>
             </div>

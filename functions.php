@@ -3634,13 +3634,12 @@ function conveyance_delivery($post_data)
 {
     global $tblConveyancePicks, $db, $current;
     $kanban_id = $post_data['kanban_id'];
-    $user = $_SESSION['user']['user_id'];
     if (isset($post_data['reason']))
         $reason = $post_data['reason'];
     else
         $reason = 0;
     if ($kanban_id) {
-        $query = "UPDATE {$tblConveyancePicks} SET deliveried_user = '{$user}', is_delivered = 1, deliveried_at ='{$current}', delivered_reason = {$reason} WHERE id = {$kanban_id}";
+        $query = "UPDATE {$tblConveyancePicks} SET is_delivered = 1, deliveried_at ='{$current}', delivered_reason = {$reason} WHERE id = {$kanban_id}";
         $result = $db->query($query);
         if ($result)
             echo 'ok';

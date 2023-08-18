@@ -203,6 +203,7 @@ $week_end = date('Y-m-d', strtotime("+6 days", strtotime($week_start)));
 
             }
 
+        // setInterval(function(){read_stock_level()},5000);
         });
 
         function kanban_detail(kanban, stock, member, time, outM, outT, outS) {
@@ -216,6 +217,7 @@ $week_end = date('Y-m-d', strtotime("+6 days", strtotime($week_start)));
             $('#in_stock').html(stock.split('/')[0]);
             $('#kanban_detail_modal').modal();
         }
+
     </script>
 </body>
 

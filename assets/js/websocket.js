@@ -1,4 +1,5 @@
-var wsURL = "wss://spsonline.co.uk/test/websocket.php";
+// var wsURL = "wss://spsonline.co.uk/websocket.php";
+var wsURL = "ws://192.168.133.138:2003/websocket.php";
 
 var websocket = new WebSocket(wsURL);
 

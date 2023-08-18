@@ -84,12 +84,6 @@
                     </a>
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
-                            <a href="stocking_level.php" class="nav-link <?php echo ($page_name == 'Stocking Level') ? 'active' : ''; ?>">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Level</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
                             <a href="stocking_input.php" class="nav-link <?php echo ($page_name == 'Stocking Input') ? 'active' : ''; ?>">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Input</p>
@@ -124,6 +118,12 @@
                         </p>
                     </a>
                     <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="stocking_level.php" class="nav-link <?php echo ($page_name == 'Stocking Level') ? 'active' : ''; ?>">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Level</p>
+                            </a>
+                        </li>
                         <li class="nav-item">
                             <a href="stocking_kanban.php" class="nav-link <?php echo ($page_name == 'Stocking Kanban') ? 'active' : ''; ?>">
                                 <i class="far fa-circle nav-icon"></i>

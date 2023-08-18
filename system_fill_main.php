@@ -143,7 +143,7 @@ require_once("assets.php");
 <!-- AdminLTE App -->
 <script src="assets/js/adminlte.min.js"></script>
 <script src="assets/js/custom.js"></script>
-<script src="assets/js/websocket.js"></script>
+<!-- <script src="assets/js/websocket.js"></script> -->
 
 <body class="hold-transition sidebar-collapse layout-top-nav" onload="startTime()">
   <div class="wrapper">
@@ -1206,6 +1206,10 @@ require_once("assets.php");
   setInterval(function() {
     getLiveVal();
   }, 30000);
+
+  setInterval(function() {
+    finalData();
+  },2000);
 
   // setInterval(function() {
   //   var selected = $('#date_picker').val().split("-");
