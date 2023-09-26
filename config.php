@@ -1,19 +1,21 @@
 <?php
 session_start();
 $APP_TITLE = 'Process Visualisation';
-// $DB_HOST = "localhost";
-// $DB_USER = "root";
-// $DB_PASSWORD = "";
-// $DB_NAME = "spsonlin_pro";
 $DB_HOST = "localhost";
-$DB_USER = "spsonlin_test";
-$DB_PASSWORD = "inspired2023**";
-$DB_NAME = "spsonlin_test";
+$DB_USER = "root";
+$DB_PASSWORD = "";
+$DB_NAME = "p1";
+// $DB_HOST = "localhost";
+// $DB_USER = "spsonlin_test";
+// $DB_PASSWORD = "inspired2023**";
+// $DB_NAME = "spsonlin_test";
 
 
 //Table Name
 $tblSettings = 'settings';
 $tblUsers = 'users';
+$tblActiveRow='active_row';
+$tblBuildAmount='build_amount';
 
 $tblTag = 'tag';
 $tblCycleSetting = 'cycle_setting';

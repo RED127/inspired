@@ -1,5 +1,12 @@
+<style>
+    .navbar-header{
+        position:fixed;
+        width:100%;
+    }
+</style>
+
 <!-- Navbar -->
-<nav class="main-header navbar navbar-expand navbar-white navbar-light">
+<nav class="main-header navbar navbar-expand navbar-white navbar-light navbar-header">
     <!-- Left navbar links -->
     <ul class="navbar-nav">
         <li class="nav-item">

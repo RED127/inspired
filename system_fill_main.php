@@ -25,6 +25,8 @@ require_once("assets.php");
     background-color: #eaecee;
     color: #063c49;
     font-weight: bold;
+    position:fixed;
+    top:6%;
   }
 
   .header .date {
@@ -221,7 +223,7 @@ require_once("assets.php");
                     ?>
                   </div>
                 </div>
-                <div class="container" id="ExcelData">
+                <div class="container" id="ExcelData" style="margin-top:2%;">
                   <div class="left_side">
                     <div class="day_container">
                       <div><Label class="dayshift">DAYSHIFT</Label>
@@ -300,6 +302,8 @@ require_once("assets.php");
 <script>
   var dayRowNum = 0,
     nightRowNum = 0;
+  var userNames = [];
+  var liveVal;
   $(document).keypress(function(event) {
     $("#cont_mod").focus();
   });
@@ -325,6 +329,7 @@ require_once("assets.php");
           saveData(id, 'all', 'day');
         }
       }
+      saveBuildAmount('day',$("#day_build_amount").val());
     }
   })
 
@@ -338,8 +343,22 @@ require_once("assets.php");
           saveData(id, 'all', 'night');
         }
       }
+      saveBuildAmount('night',$("#night_build_amount").val());
     }
   })
+
+  async function saveBuildAmount(tbl,amount)
+  {
+    const data = await $.ajax({
+      url:"buildAmount.php",
+      type:"POST",
+      data : {
+        table:tbl,
+        amount:amount,
+        date:$('#date_picker').val()
+      }
+    });
+  }
 
 
   $("#cont_mod").keydown(function(e) {
@@ -650,6 +669,12 @@ require_once("assets.php");
   //Select start user name and set it and time for day shift
   function selectDayStName(row) {
     activeRow(row, 'day');
+    console.log(row);
+    // Change Status of TD
+    const selID = '#dayStSel_' + row;
+    $(selID).parent().data('status','finished')
+
+
     var selectElement = document.getElementById("dayStSel_" + row);
     var selectedValue = selectElement.value;
 
@@ -685,6 +710,9 @@ require_once("assets.php");
   //Select start user name and set it and time for night shift
   function selectNightStName(row) {
     activeRow(row, 'night');
+
+    const selID = '#nightStSel_' + row;
+    $(selID).parent().data('status','finished')
 
     var selectElement = document.getElementById("nightStSel_" + row);
     var selectedValue = selectElement.value;
@@ -862,10 +890,6 @@ require_once("assets.php");
           data: data
         },
         success: () => {
-          websocket.send(JSON.stringify({
-            type:"update",
-            message:"save"
-          }));
           console.log("Data is saved successfully.");
         }
       })
@@ -875,15 +899,17 @@ require_once("assets.php");
   // 2023-7-20
 
   function saveData(row, col, state) {
-    var cont, mod, rowID1, rowID2, curretUser, count, liveTime, liveBuild, complete;
+    var cont, mod, rowID1, rowID2, curretUser, count, liveTime, liveBuild, complete, buildAmount;
     var startInfo = {};
     var finishInfo = {};
     if (col == 'start') {
       var selID;
       if (state == 'day') {
         selID = '#dayStSel_' + row;
+        buildAmount = $('#day_build_amount').val();
       } else {
         selID = '#nightStSel_' + row;
+        buildAmount = $('#night_build_amount').val();
       }
       rowID1 = $(selID).parent().parent().attr("id");
       rowID2 = $('#' + rowID1).next().next().next().attr("id");
@@ -910,8 +936,10 @@ require_once("assets.php");
       var selID;
       if (state == 'day') {
         selID = '#dayFnSel_' + row;
+        buildAmount = $('#day_build_amount').val();
       } else {
         selID = '#nightFnSel_' + row;
+        buildAmount = $('#night_build_amount').val();
       }
       rowID1 = $(selID).parent().parent().attr("id");
       rowID2 = $('#' + rowID1).next().next().next().attr("id");
@@ -938,8 +966,10 @@ require_once("assets.php");
       var selID;
       if (state == 'day') {
         selID = '#dayLCSel_' + row;
+        buildAmount = $('#day_build_amount').val();
       } else {
         selID = '#nightLCSel_' + row;
+        buildAmount = $('#night_build_amount').val();
       }
       rowID1 = $(selID).parent().parent().attr("id");
       rowID2 = $('#' + rowID1).next().next().next().attr("id");
@@ -964,6 +994,11 @@ require_once("assets.php");
       }
     } else {
       var selID = state == "day" ? "#dayRow_" + row : "#nightRow_" + row;
+      if (state == 'day') {
+        buildAmount = $('#day_build_amount').val();
+      } else {
+        buildAmount = $('#night_build_amount').val();
+      }
       rowID1 = $(selID).attr("id");
       rowID2 = $('#' + rowID1).next().next().next().attr("id");
       count = $(selID).children(':nth-child(3)').text();
@@ -1014,8 +1049,10 @@ require_once("assets.php");
         liveBuild: liveBuild,
         startInfo: startInfo,
         finishInfo: finishInfo,
-        complete: complete
+        complete: complete,
+        buildAmount : buildAmount
       }
+      // console.log(data);
       finalData(data);
     }
 
@@ -1027,10 +1064,7 @@ require_once("assets.php");
   }
 
   function activeRow(row, table) {
-    localStorage.setItem('active', JSON.stringify({
-      table: table,
-      row: row
-    }));
+    saveActiveRow(row,table);
     removeActiveRow();
     // Select Row
     const selectedRow = 2 * row - 1;
@@ -1069,6 +1103,42 @@ require_once("assets.php");
     }
   }
 
+  function saveActiveRow(row,table){
+    $.ajax({
+      url: "activeRow.php",
+      method: "post",
+      data: {
+        row:row,
+        table:table,
+        date:$('#date_picker').val()
+      }
+    })
+  }
+
+  async function getActiveRow(){
+    const data = await $.ajax({
+      url:'actions.php',
+      method:'post',
+      data : {
+        action :'get_active_row',
+        date:$('#date_picker').val()
+      }
+    });
+    return JSON.parse(data);
+  }
+
+  // async function removeActiveRow(){
+  //   const data = await $.ajax({
+  //     url:'action.php',
+  //     method:'post',
+  //     data : {
+  //       action :'get_active_row',
+  //       date:$('#date_picker').val()
+  //     }
+  //   });
+  //   console.log("get====>",data);
+  // }
+
   function search(obj, tar) {
     var state = false;
     obj.map(item => {
@@ -1095,6 +1165,7 @@ require_once("assets.php");
       type: "get",
       success: (data) => {
         liveVal = JSON.parse(data)[0];
+        console.log(liveVal);
         // var dayLastID = '';
         // for (let i = 0; i < ($('#dayShiftTB tr').length - 1); i++) {
         //   if (i % 2 == 0 && $('tr[dayrowid="' + i + '"]').children(':first').css('background-color') == 'rgb(30, 184, 35)' && Number($('tr[dayrowid="' + i + '"]').children(':nth-child(4)').text()) && !Number($('tr[dayrowid="' + (i + 2) + '"]').children(':nth-child(4)').text()))
@@ -1165,7 +1236,30 @@ require_once("assets.php");
     $("#cont_mod").focus();
     finalData();
     getLiveVal();
+    get_build_amount();
   })
+
+  function get_build_amount(){
+    $.ajax({
+      url:'actions.php',
+      method:'post',
+      data : {
+        action : 'get_built_amount',
+        date : $('#date_picker').val()
+      }
+    }).then(function(data){
+      if(data.length){
+        data = JSON.parse(data);
+        data.map(item=>{
+          if(item.tbl_name == "day"){
+            $('#day_build_amount').val(item.amount)
+          }else if(item.tbl_name == "night"){
+            $('#night_build_amount').val(item.amount)
+          }
+        })
+      }
+    })
+  }
 
   function read_excel_data(selectedDate) {
     const today = new Date();
@@ -1183,16 +1277,17 @@ require_once("assets.php");
         action: 'read_excel',
         date: selectedDate ? selectedDate : formattedToday
       }
-    }).done(function(result) {
+    }).done(async function(result) {
       var result = JSON.parse(result);
       $('.night_table').html(result.night);
       $('.day_table').html(result.day);
 
       // Active Row
       if (result.day != 'No data found' && result.night != 'No data found') {
-        const activeArray = localStorage.getItem('active') ? JSON.parse(localStorage.getItem('active')) : {};
-        if (dayRowNum && nightRowNum && activeArray && activeArray.table) {
-          activeRow(activeArray.row, activeArray.table)
+        const activeArray = await getActiveRow();
+        if (dayRowNum && nightRowNum && activeArray && activeArray.tbl_name) {
+          if(activeArray.DATE == $('#date_picker').val())
+            activeRow(activeArray.row_id, activeArray.tbl_name)
         }
       }
     });
@@ -1209,6 +1304,13 @@ require_once("assets.php");
 
   setInterval(function() {
     finalData();
+
+    // Set Date & Time
+    const dt = new Date();
+    var localTime = dt.toLocaleTimeString().split(":");
+    if(localTime[0] == "7" && localTime[1] == "15" && localTime[2].includes("AM")){
+      $('#date_picker').data("DateTimePicker").date(new Date());
+    }
   },2000);
 
   // setInterval(function() {

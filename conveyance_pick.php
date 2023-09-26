@@ -193,7 +193,7 @@ require_once("assets.php");
 
 
             <div class="col-md-6">
-              <div class="font-2" style="color: #fff; font-size:10px; background: #3b3b3b;">Kanban:</div>
+              <div class="font-2" style="color: #fff; font-size: 10px; background: #3b3b3b;">Kanban:</div>
               <div class="font-5" id="current_kanban"></div>
               <div class="" id="current_kanban_part_number"></div>
               <input type="hidden" id="current_kanban_part_num" />

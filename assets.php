@@ -36,6 +36,10 @@
     position: relative;
   }
 
+  .content{
+    padding-top:5% !important;
+  }
+
   .brand {
     position: absolute;
     left: 50%;

@@ -2026,7 +2026,7 @@ function get_oldest_lanes_scanned($stock_available_lanes, $post_data, $direction
             return $return_html;
 
         $sort_result = $db->query($sort_query);
-        if ($sort_result->num_rows > 0) {
+        if (mysqli_num_rows($sort_result) > 0) {
             while ($row = mysqli_fetch_object($sort_result)) {
 
                 $part_no = $row->part;
@@ -4603,13 +4603,13 @@ function get_users()
     global $db;
     $sql1 = "SELECT * FROM users";
     $result1 = $db->query($sql1);
-    if ($result1->num_rows > 0) {
+    if ($result1 && mysqli_num_rows($result1) > 0) {
         while ($row = $result1->fetch_assoc()) {
             $userNames[] = $row['username'];
         }
         $jsonData = json_encode($userNames);
     } else {
-        echo "No data found";
+        $jsonData = json_encode(array('data' => "No data found"));
     }
     echo $jsonData;
 }
@@ -4629,7 +4629,7 @@ function read_excel($post_data)
     $nightResult = $db->query($nightQuery);
     $dayData = '';
     $nightData = '';
-    if ($dayResult->num_rows > 0) {
+    if ($dayResult && mysqli_num_rows($dayResult) > 0) {
         // Display the data in an HTML table
         $dayData = "<table id='dayShiftTB'>";
         $dayData = $dayData . "<tr><th>Cont.</th><th>Mod.</th><th>Counter</th><th>LIVE BUILD</th><th>Load confirm</th><th>S/fill START</th><th>S/fill FINISH</th></tr>";
@@ -4688,7 +4688,7 @@ function read_excel($post_data)
     }
 
     // Night Table Data
-    if ($nightResult->num_rows > 0) {
+    if ($nightResult && mysqli_num_rows($nightResult) > 0) {
         // Display the data in an HTML table
         $nightData = "<table id='nightShiftTB'>";
         $nightData = $nightData . "<tr><th>Cont.</th><th>Mod.</th><th>Counter</th><th>LIVE BUILD</th><th>Load confirm</th><th>S/fill START</th><th>S/fill FINISH</th></tr>";
@@ -4752,3 +4752,27 @@ function read_excel($post_data)
     );
     echo json_encode($data);
 }
+
+function get_active_row($post_data)
+{
+    global $db, $tblActiveRow;
+    $date = $post_data['date'];
+    $query = "SELECT * FROM {$tblActiveRow} WHERE date='".$date."'";
+    $result = $db->query($query);
+    $resData = $result->fetch_assoc();
+    echo json_encode($resData);
+}
+
+function get_built_amount($post_data)
+{
+    global $db, $tblBuildAmount;
+    $date = $post_data['date'];
+    $query = "SELECT * FROM {$tblBuildAmount} WHERE date='".$date."'";
+    $result = $db->query($query);
+    $resData = [];
+    while ($rowNum = $result->fetch_assoc()) {
+        array_push($resData, $rowNum);
+    }
+    echo json_encode($resData);
+}
+

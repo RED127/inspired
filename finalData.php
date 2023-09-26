@@ -68,12 +68,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   if ($result = $db->query("SHOW TABLE STATUS FROM " . $DB_NAME . " LIKE 'final_data'")) {
     try {
       $output = array();
-      $rr = $db->query($sql_read);
-      while ($item = mysqli_fetch_assoc($rr)) {
-        $output[] = $item;
+
+      if($rr = $db->query($sql_read))
+      {
+        while ($item = mysqli_fetch_assoc($rr)) {
+          $output[] = $item;
+        }
+        mysqli_free_result($result);
+        echo json_encode($output);
       }
-      mysqli_free_result($result);
-      echo json_encode($output);
     } catch (Exception $err) {
       echo $err;
     }
